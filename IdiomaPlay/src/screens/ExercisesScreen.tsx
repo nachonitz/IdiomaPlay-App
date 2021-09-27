@@ -3,23 +3,19 @@ import { View, Text, StyleSheet, Touchable, TouchableOpacity } from 'react-nativ
 import { CustomHeaderScreen } from '../components/CustomHeaderScreen'
 import { styles } from '../theme/appTheme'
 import { Card } from 'react-native-elements'
-import { ParamListBase, useNavigation } from '@react-navigation/core';
-import { Screens } from '../navigator/Screens';
-import { StackNavigationProp } from '@react-navigation/stack'
 
 
-export const HomeScreen = () => {
-  const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
-  const [lessons, setLessons] = useState([]);
+export const ExercisesScreen = () => {
+  const [exercises, setExercises] = useState([]);
 
-  const getLessons = async () => {
+  const getExercises = async () => {
     try {
       const respondLessons = await fetch(
-        "https://tp-tdp2.herokuapp.com/lessons"
+        "https://tp-tdp2.herokuapp.com/exercises"
       );
-      const lessons = await respondLessons.json();
-      console.log(lessons.items)
-      setLessons(lessons.items)
+      const exercises = await respondLessons.json();
+      console.log(exercises.items)
+      setExercises(exercises.items)
     } catch (error) {
       // setError(true);
       console.error(error);
@@ -27,18 +23,18 @@ export const HomeScreen = () => {
   };
 
   useEffect(() => {
-    getLessons();
+    getExercises();
   }, []);
   return (
     <CustomHeaderScreen logo  profile>
       <View style={homeStyles.container}>
 
-      {lessons.length > 0 && lessons.map((lesson:any, index) => (
-        <TouchableOpacity onPress={() => {navigation.navigate(Screens.exercises)}} activeOpacity={0.8}>
+      {exercises.length > 0 && exercises.map((exercise:any, index) => (
+        <TouchableOpacity activeOpacity={0.8}>
           <Card containerStyle={homeStyles.card}>
-            <Card.Title style={homeStyles.cardTitle}>{lesson.title}</Card.Title>
+            <Card.Title style={homeStyles.cardTitle}>{exercise.title}</Card.Title>
             <Card.Divider/>
-            <Text style={homeStyles.cardDescription}>Descripción de la lección</Text>
+            <Text style={homeStyles.cardDescription}>Descripción del ejercicio</Text>
             <Text style={homeStyles.cardSubtitle}>Dificultad y puntaje</Text>
           </Card>
         </TouchableOpacity>

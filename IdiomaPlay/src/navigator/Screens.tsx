@@ -1,4 +1,5 @@
 export const Screens = {
   welcome: 'WelcomeScreen',
-  home: 'HomeScreen'
+  home: 'HomeScreen',
+  exercises: 'ExercisesScreen'
 }
