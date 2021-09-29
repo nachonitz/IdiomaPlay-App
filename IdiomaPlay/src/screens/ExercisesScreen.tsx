@@ -5,21 +5,21 @@ import { styles } from '../theme/appTheme'
 import { Card } from 'react-native-elements'
 
 
-export const ExercisesScreen = () => {
+export const ExercisesScreen = ({route}:any) => {
   const [exercises, setExercises] = useState([]);
 
   const getExercises = async () => {
     try {
       const respondLessons = await fetch(
-        "https://tp-tdp2.herokuapp.com/exercises"
+        "https://tp-tdp2.herokuapp.com/lessons/" + route.params.lessonId
       );
       const exercises = await respondLessons.json();
-      console.log(exercises.items)
-      setExercises(exercises.items)
+      console.log(exercises)
+      setExercises(exercises.exercises)
     } catch (error) {
       // setError(true);
       console.error(error);
-    }
+    }r
   };
 
   useEffect(() => {
