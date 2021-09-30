@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Touchable, TouchableOpacity } from 'react-nativ
 import { CustomHeaderScreen } from '../components/CustomHeaderScreen'
 import { styles } from '../theme/appTheme'
 import { Card } from 'react-native-elements'
+import { Exercise } from '../components/Exercise'
 
 
 export const ExercisesScreen = ({route}:any) => {
@@ -19,7 +20,7 @@ export const ExercisesScreen = ({route}:any) => {
     } catch (error) {
       // setError(true);
       console.error(error);
-    }r
+    }
   };
 
   useEffect(() => {
@@ -29,16 +30,7 @@ export const ExercisesScreen = ({route}:any) => {
     <CustomHeaderScreen logo  profile>
       <View style={homeStyles.container}>
 
-      {exercises.length > 0 && exercises.map((exercise:any, index) => (
-        <TouchableOpacity activeOpacity={0.8}>
-          <Card containerStyle={homeStyles.card}>
-            <Card.Title style={homeStyles.cardTitle}>{exercise.title}</Card.Title>
-            <Card.Divider/>
-            <Text style={homeStyles.cardDescription}>Descripción del ejercicio</Text>
-            <Text style={homeStyles.cardSubtitle}>Dificultad y puntaje</Text>
-          </Card>
-        </TouchableOpacity>
-      ))}
+        {exercises.length > 0 && <Exercise exercise={exercises[0]}/>}
       
       <View style={homeStyles.spacer}/>
       </View>

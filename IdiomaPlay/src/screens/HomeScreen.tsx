@@ -37,9 +37,6 @@ export const HomeScreen = () => {
         <TouchableOpacity onPress={() => {navigation.navigate(Screens.exercises, { lessonId: lesson['id']})}} activeOpacity={0.8}>
           <Card containerStyle={homeStyles.card}>
             <Card.Title style={homeStyles.cardTitle}>{lesson.title}</Card.Title>
-            <Card.Divider/>
-            <Text style={homeStyles.cardDescription}>Descripción de la lección</Text>
-            <Text style={homeStyles.cardSubtitle}>Dificultad y puntaje</Text>
           </Card>
         </TouchableOpacity>
       ))}
