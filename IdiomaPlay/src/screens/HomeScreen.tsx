@@ -34,7 +34,11 @@ export const HomeScreen = () => {
       <View style={homeStyles.container}>
 
       {lessons.length > 0 && lessons.map((lesson:any, index) => (
-        <TouchableOpacity onPress={() => {navigation.navigate(Screens.exercises, { lessonId: lesson['id']})}} activeOpacity={0.8}>
+        <TouchableOpacity
+          onPress={() => {navigation.navigate(Screens.exercises, { lessonId: lesson['id']})}}
+          activeOpacity={0.8}
+          key={lesson.id}
+        >
           <Card containerStyle={homeStyles.card}>
             <Card.Title style={homeStyles.cardTitle}>{lesson.title}</Card.Title>
           </Card>
