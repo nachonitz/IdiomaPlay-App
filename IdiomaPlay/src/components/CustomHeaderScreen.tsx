@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, StatusBar, StyleSheet, Text, View, Image } from 'react-native'
+import { ScrollView, StatusBar, StyleSheet, Text, View, Image, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { styles } from '../theme/appTheme'
 import { colors } from '../theme/colors'
@@ -34,7 +34,7 @@ export const CustomHeaderScreen = ({
             style={{
               ...customScreenStyles.headerContainer,
               paddingTop: top ? top : 10,
-              height: 55 + (top ? top : 5),
+              height: 65 + (top ? top : 5),
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -43,14 +43,14 @@ export const CustomHeaderScreen = ({
             }}
           >
             <LinearGradient
-        // Background Linear Gradient
-        colors={[colors.primary, colors.lightPrimary, 'white']}
-        style={{position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        height: 67}}
-      />
+              // Background Linear Gradient
+              colors={[colors.darkPrimary, colors.primary, colors.lightPrimary, 'white']}
+              style={{position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              height: 80}}
+            />
             <View
               style={{
                 width: '7%',
@@ -62,15 +62,6 @@ export const CustomHeaderScreen = ({
             </View>
 
             <View>
-              {/* <Image
-                source={require('../assets/logo_white.jpg')}
-                style={{
-                  resizeMode: 'contain',
-                  marginBottom: 5,
-                  height: '100%',
-                  width: 200,
-                }}
-              /> */}
               <Text style={customScreenStyles.idiomaPlay}>IdiomaPlay</Text>
             </View>
 
@@ -88,7 +79,7 @@ export const CustomHeaderScreen = ({
           </View>
           
 
-          <CustomKeyboardAvoidingView>
+          <CustomKeyboardAvoidingView style={{flex: 1}}>
             <ScrollView
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps={'handled'}

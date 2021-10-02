@@ -3,11 +3,21 @@ import { View, Text, StyleSheet, Touchable, TouchableOpacity } from 'react-nativ
 import { CustomHeaderScreen } from '../components/CustomHeaderScreen'
 import { styles } from '../theme/appTheme'
 import { Card } from 'react-native-elements'
-import { Exercise } from '../components/Exercise'
+import { CustomExercise } from '../components/CustomExercise';
+import { ParamListBase, useNavigation } from '@react-navigation/core';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Screens } from '../navigator/Screens';
 
+// TODO: mejorar tipos en el route
+// interface Props {
+//   finishLesson: () => void
+
+// }
 
 export const ExercisesScreen = ({route}:any) => {
+  const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
   const [exercises, setExercises] = useState([]);
+  const [currentExercise, setcurrentExercise] = useState(0)
 
   const getExercises = async () => {
     try {
@@ -23,16 +33,27 @@ export const ExercisesScreen = ({route}:any) => {
     }
   };
 
+  const finishExercise = () => {
+    if(currentExercise < exercises.length - 1){
+      setcurrentExercise(currentExercise + 1)
+    }else{
+      navigation.navigate(Screens.home)
+      route.params.finishLesson()
+    }
+  }
+
   useEffect(() => {
     getExercises();
   }, []);
-  return (
-    <CustomHeaderScreen logo  profile>
-      <View style={homeStyles.container}>
 
-        {exercises.length > 0 && <Exercise exercise={exercises[0]}/>}
-      
-      <View style={homeStyles.spacer}/>
+  return (
+    <CustomHeaderScreen logo  back>
+      <View style={homeStyles.container}>
+        {exercises.length > 0 && 
+          <CustomExercise 
+            exercise={exercises[currentExercise]} 
+            finishExercise={finishExercise}
+          />}
       </View>
     </CustomHeaderScreen>
   )
