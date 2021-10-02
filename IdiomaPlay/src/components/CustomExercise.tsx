@@ -38,7 +38,7 @@ export const CustomExercise = ({exercise, finishExercise}: Props) => {
       <View style={homeStyles.titleContainer}>
         <Text style={homeStyles.title}>{exercise.title}</Text>
         <Text style={homeStyles.type}>{TypeToInstruction(exercise.type)}</Text>
-        <Text style={homeStyles.sentence}>{exercise.sentence}</Text>
+        <Text style={homeStyles.sentence}>{exercise.sentence.replace('*','__')}</Text>
       </View>
 
       <View style={homeStyles.buttonsContainer}>
@@ -70,6 +70,20 @@ export const CustomExercise = ({exercise, finishExercise}: Props) => {
             </Card>
           </TouchableOpacity>
         </View>
+
+        {(exercise.type.localeCompare('translate_old_to_new') === 0 || exercise.type.localeCompare('translate_new_to_old') === 0) && <View style={homeStyles.answerRowContainer}>
+          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[4], 4)} } activeOpacity={0.8}>
+            <Card containerStyle={[homeStyles.card, correct == 4 && homeStyles.cardCorrect, incorrect == 4 && homeStyles.cardIncorrect]}>
+              <Card.Title style={homeStyles.cardTitle}>{exercise.options[4]}</Card.Title>
+            </Card>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[5], 5)} } activeOpacity={0.8}>
+            <Card containerStyle={[homeStyles.card, correct == 5 && homeStyles.cardCorrect, incorrect == 5 && homeStyles.cardIncorrect]}>
+              <Card.Title style={homeStyles.cardTitle}>{exercise.options[5]}</Card.Title>
+            </Card>
+          </TouchableOpacity>
+        </View>}
       </View>
     </View>
   )
@@ -79,8 +93,8 @@ const homeStyles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-evenly',
-    height: Dimensions.get('window').height - 150,
+    justifyContent: 'flex-start',
+    height: Dimensions.get('window').height - 110,
   },
   title: {
     fontSize: 30,
@@ -102,10 +116,10 @@ const homeStyles = StyleSheet.create({
     fontWeight: 'bold'
   },
   titleContainer: {
-    marginTop: 50
+    marginTop: 0
   },
   answerRowContainer: {
-    marginTop: 50,
+    marginTop: 0,
     flexDirection:'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -137,7 +151,7 @@ const homeStyles = StyleSheet.create({
     backgroundColor: colors.wrong
   },
   cardTitle: {
-    fontSize: 22,
+    fontSize: 18,
     color: colors.darkPrimary,
     fontWeight: 'bold',
   },

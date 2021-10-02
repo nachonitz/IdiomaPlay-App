@@ -28,12 +28,16 @@ export const HomeScreen = () => {
       //   "https://tp-tdp2.herokuapp.com/lessons"
       // );
       // const lessons = await respondLessons.json();
-      console.log(resp.data)
+      //console.log(resp.data)
       setLessons(resp.data.items)
       const completed: Array<boolean> = []
       const length = resp.data.items.length
 
       for(var i = 0; i < length; i++){
+        if(i == 0) {
+          completed.push(false)
+          continue
+        }
         if(i < length - 1){
           completed.push(true)
         }
@@ -47,6 +51,12 @@ export const HomeScreen = () => {
       console.error(error);
     }
   };
+
+  const finishLesson = () => {
+    var completed = completedLessons
+    completed[0] = true
+    setcompletedLessons(completed)
+  }
 
   useEffect(() => {
     getLessons();
@@ -62,7 +72,7 @@ export const HomeScreen = () => {
             navigation.navigate(
               Screens.exercises, 
               { lessonId: lesson['id'], 
-                finishLesson: ()=> console.log('termino la lesson')
+                finishLesson: ()=> finishLesson()
               }
             )}}
           activeOpacity={0.8}
@@ -80,11 +90,12 @@ export const HomeScreen = () => {
             navigation.navigate(
               Screens.exercises, 
               { lessonId: 1, 
-                finishLesson: ()=> console.log('termino el examen')
+                finishLesson: ()=> console.log('termino el examen'),
+                isExam: true
               }
             )}}
           activeOpacity={0.8}
-          disabled={true}
+          disabled={false}
         >
           <Card containerStyle={[homeStyles.card, {backgroundColor: colors.lightPrimary}]}>
             <Card.Title style={homeStyles.cardTitle}>Test</Card.Title>

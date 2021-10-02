@@ -25,6 +25,20 @@ export const ExercisesScreen = ({route}:any) => {
         "https://tp-tdp2.herokuapp.com/lessons/" + route.params.lessonId
       );
       const exercises = await respondLessons.json();
+      //console.log(exercises)
+      setExercises(exercises.exercises)
+    } catch (error) {
+      // setError(true);
+      console.error(error);
+    }
+  };
+
+  const getExam = async () => {
+    try {
+      const respondLessons = await fetch(
+        "https://tp-tdp2.herokuapp.com/exams/" + 1
+      );
+      const exercises = await respondLessons.json();
       console.log(exercises)
       setExercises(exercises.exercises)
     } catch (error) {
@@ -33,17 +47,22 @@ export const ExercisesScreen = ({route}:any) => {
     }
   };
 
+
   const finishExercise = () => {
     if(currentExercise < exercises.length - 1){
       setcurrentExercise(currentExercise + 1)
     }else{
-      navigation.navigate(Screens.home)
       route.params.finishLesson()
+      navigation.navigate(Screens.home)
     }
   }
 
   useEffect(() => {
-    getExercises();
+    if (route.params.isExam){
+      getExam();
+    } else {
+      getExercises();
+    }
   }, []);
 
   return (
