@@ -12,11 +12,13 @@ import { TypeToInstruction } from '../services/Dictionary';
 interface Props {
   exercise: Exercise
   finishExercise: () => void
+  failExercise: () => void
 }
 
-export const CustomExercise = ({exercise, finishExercise}: Props) => {
+export const CustomExercise = ({exercise, finishExercise, failExercise}: Props) => {
   const [correct, setCorrect] = useState(-1)
   const [incorrect, setIncorrect] = useState(-1)
+  const [fails, setFails] = useState(0)
 
   const checkAnswer = (option: string, index: number) => {
     if (option.localeCompare(exercise.correctOption) === 0) {
@@ -28,6 +30,11 @@ export const CustomExercise = ({exercise, finishExercise}: Props) => {
         setIncorrect(-1)
       }, 1000);
     } else {
+      setFails(fails + 1)
+      if (fails === 2) {
+        failExercise()
+        finishExercise()
+      }
       setIncorrect(index)
     }
   }

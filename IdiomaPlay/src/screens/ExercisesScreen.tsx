@@ -8,6 +8,7 @@ import { ParamListBase, useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens } from '../navigator/Screens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import IdiomaPlayApi from '../api/IdiomaPlayApi';
 
 // TODO: mejorar tipos en el route
 // interface Props {
@@ -20,6 +21,7 @@ export const ExercisesScreen = ({route}:any) => {
   const [exercises, setExercises] = useState([]);
   const [currentExercise, setcurrentExercise] = useState(0)
   const {bottom} = useSafeAreaInsets()
+  const [failedExercises, setFailedExercises] = useState(0)
 
   const getExercises = async () => {
     try {
@@ -49,13 +51,27 @@ export const ExercisesScreen = ({route}:any) => {
     }
   };
 
+  const failExercise = async () => {
+    setFailedExercises(failedExercises + 1)
+  }
 
-  const finishExercise = () => {
+
+  const finishExercise = async () => {
     if(currentExercise < exercises.length - 1){
       setcurrentExercise(currentExercise + 1)
     }else{
-      route.params.finishLesson()
+      try {
+      const resp = await IdiomaPlayApi.post('/participations',
+      {
+        'userId': 1,
+        'unitId': 1,
+        'lessonId': route.params.lessonId,
+        'correctExercises': 1
+      })
       navigation.navigate(Screens.home)
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 
@@ -74,6 +90,7 @@ export const ExercisesScreen = ({route}:any) => {
           <CustomExercise 
             exercise={exercises[currentExercise]} 
             finishExercise={finishExercise}
+            failExercise={failExercise}
           />}
       </View>
       <View style={homeStyles.spacer}/>

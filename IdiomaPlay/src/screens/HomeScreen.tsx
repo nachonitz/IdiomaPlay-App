@@ -13,37 +13,49 @@ import { colors } from '../theme/colors';
 export const HomeScreen = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
   const [lessons, setLessons] = useState([]);
-  const [completedLessons, setcompletedLessons] = useState <Array<boolean>>([])
+  const [completedLessons, setcompletedLessons] = useState <Array<any>>([])
 
   const getLessons = async () => {
     try {
       const resp = await IdiomaPlayApi.get('/lessons',
       { 
         params: {
-          'limit': 10
+          'limit': 20
         }
       }
     )
-      // const respondLessons = await fetch(
-      //   "https://tp-tdp2.herokuapp.com/lessons"
-      // );
-      // const lessons = await respondLessons.json();
-      //console.log(resp.data)
       setLessons(resp.data.items)
-      const completed: Array<boolean> = []
+      console.log(resp.data.items)
+      const completed: Array<any> = []
       const length = resp.data.items.length
-
+      const lessons = resp.data.items;
       for(var i = 0; i < length; i++){
-        if(i == 0) {
-          completed.push(false)
-          continue
+        const lessonId = lessons[i].id;
+        const dict = {"lessonId":lessonId, "value":false}
+        completed.push(dict)
+      }
+      try {
+        const participationsResp = await IdiomaPlayApi.get('participations',
+        {
+          params: {
+            'limit': 20,
+            'page': 1,
+            'user': 1,
+            'unit': 1
+          }
         }
-        if(i < length - 1){
-          completed.push(true)
+        )
+        const length = participationsResp.data.items.length
+        const participations = participationsResp.data.items;
+        console.log(participations)
+        for (var i = 0; i < length; i++){
+          const lessonId = participations[i].lesson.id
+          const isCorrect = participations[i].correctExercises
+          const index = completed.findIndex((element) => element.lessonId === lessonId)
+          completed[index] = {"lessonId":lessonId, value:true}
         }
-        else{
-          completed.push(false)
-        }
+      } catch (error) {
+        console.error(error)
       }
       setcompletedLessons(completed)
     } catch (error) {
@@ -51,12 +63,6 @@ export const HomeScreen = () => {
       console.error(error);
     }
   };
-
-  const finishLesson = () => {
-    var completed = completedLessons
-    completed[0] = true
-    setcompletedLessons(completed)
-  }
 
   useEffect(() => {
     getLessons();
@@ -66,20 +72,19 @@ export const HomeScreen = () => {
     <CustomHeaderScreen logo  profile>
       <View style={homeStyles.container}>
 
-      {lessons.length > 0 && lessons.map((lesson:any, index) => (
+      {lessons.length > 0 && completedLessons.length > 0 && lessons.map((lesson:any, index) => (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate(
+            navigation.replace(
               Screens.exercises, 
-              { lessonId: lesson['id'], 
-                finishLesson: ()=> finishLesson()
+              { lessonId: lesson['id']
               }
             )}}
           activeOpacity={0.8}
-          disabled={completedLessons[index]}
+          disabled={completedLessons[index].value}
           key={lesson.id}
         >
-          <Card containerStyle={[homeStyles.card, completedLessons[index] && {backgroundColor: colors.correct}]}>
+          <Card containerStyle={[homeStyles.card, completedLessons[index].value && {backgroundColor: colors.correct}]}>
             <Text style={homeStyles.cardTitle}>{lesson.title}</Text>
           </Card>
         </TouchableOpacity>
@@ -87,7 +92,7 @@ export const HomeScreen = () => {
 
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate(
+            navigation.replace(
               Screens.exercises, 
               { lessonId: 1, 
                 finishLesson: ()=> console.log('termino el examen'),
