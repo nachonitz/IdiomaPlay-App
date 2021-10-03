@@ -37,54 +37,82 @@ export const CustomExercise = ({exercise, finishExercise}: Props) => {
     
       <View style={homeStyles.titleContainer}>
         <Text style={homeStyles.title}>{exercise.title}</Text>
-        <Text style={homeStyles.type}>{TypeToInstruction(exercise.type)}</Text>
         <Text style={homeStyles.sentence}>{exercise.sentence.replace('*','__')}</Text>
       </View>
 
-      <View style={homeStyles.buttonsContainer}>
-        
-        <View style={homeStyles.answerRowContainer}>
+      {exercise.type == 'complete'
+      ? (
+        <View style={homeStyles.buttonsContainer}>
+          <View style={homeStyles.answerRowContainer}>
+            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[0], 0)} } activeOpacity={0.8}>
+              <Card containerStyle={[homeStyles.card, correct == 0 && homeStyles.cardCorrect, incorrect == 0 && homeStyles.cardIncorrect, {width: Dimensions.get('window').width*0.4}]}>
+                <Text style={homeStyles.cardTitle}>{exercise.options[0]}</Text>
+              </Card>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[1], 1)} } activeOpacity={0.8}>
+              <Card containerStyle={[homeStyles.card, correct == 1 && homeStyles.cardCorrect, incorrect == 1 && homeStyles.cardIncorrect, {width: Dimensions.get('window').width*0.4}]}>
+              <Text style={homeStyles.cardTitle}>{exercise.options[1]}</Text>
+              </Card>
+            </TouchableOpacity>
+          </View>
+
+          <View style={homeStyles.answerRowContainer}>
+            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[2], 2)} } activeOpacity={0.8}>
+              <Card containerStyle={[homeStyles.card, correct == 2 && homeStyles.cardCorrect, incorrect == 2 && homeStyles.cardIncorrect, {width: Dimensions.get('window').width*0.4}]}>
+              <Text style={homeStyles.cardTitle}>{exercise.options[2]}</Text>
+              </Card>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[3], 3)} } activeOpacity={0.8}>
+              <Card containerStyle={[homeStyles.card, correct == 3 && homeStyles.cardCorrect, incorrect == 3 && homeStyles.cardIncorrect, {width: Dimensions.get('window').width*0.4}]}>
+              <Text style={homeStyles.cardTitle}>{exercise.options[3]}</Text>
+              </Card>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+      : (
+        <View style={homeStyles.buttonsContainer}>
           <TouchableOpacity onPress={() => {checkAnswer(exercise.options[0], 0)} } activeOpacity={0.8}>
             <Card containerStyle={[homeStyles.card, correct == 0 && homeStyles.cardCorrect, incorrect == 0 && homeStyles.cardIncorrect]}>
-              <Card.Title style={homeStyles.cardTitle}>{exercise.options[0]}</Card.Title>
+            <Text style={homeStyles.cardTitle}>{exercise.options[0]}</Text>
             </Card>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => {checkAnswer(exercise.options[1], 1)} } activeOpacity={0.8}>
             <Card containerStyle={[homeStyles.card, correct == 1 && homeStyles.cardCorrect, incorrect == 1 && homeStyles.cardIncorrect]}>
-              <Card.Title style={homeStyles.cardTitle}>{exercise.options[1]}</Card.Title>
+            <Text style={homeStyles.cardTitle}>{exercise.options[1]}</Text>
             </Card>
           </TouchableOpacity>
-        </View>
-
-        <View style={homeStyles.answerRowContainer}>
+        
           <TouchableOpacity onPress={() => {checkAnswer(exercise.options[2], 2)} } activeOpacity={0.8}>
             <Card containerStyle={[homeStyles.card, correct == 2 && homeStyles.cardCorrect, incorrect == 2 && homeStyles.cardIncorrect]}>
-              <Card.Title style={homeStyles.cardTitle}>{exercise.options[2]}</Card.Title>
+            <Text style={homeStyles.cardTitle}>{exercise.options[2]}</Text>
             </Card>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => {checkAnswer(exercise.options[3], 3)} } activeOpacity={0.8}>
             <Card containerStyle={[homeStyles.card, correct == 3 && homeStyles.cardCorrect, incorrect == 3 && homeStyles.cardIncorrect]}>
-              <Card.Title style={homeStyles.cardTitle}>{exercise.options[3]}</Card.Title>
+            <Text style={homeStyles.cardTitle}>{exercise.options[3]}</Text>
             </Card>
           </TouchableOpacity>
-        </View>
-
-        {(exercise.type.localeCompare('translate_old_to_new') === 0 || exercise.type.localeCompare('translate_new_to_old') === 0) && <View style={homeStyles.answerRowContainer}>
+        
           <TouchableOpacity onPress={() => {checkAnswer(exercise.options[4], 4)} } activeOpacity={0.8}>
             <Card containerStyle={[homeStyles.card, correct == 4 && homeStyles.cardCorrect, incorrect == 4 && homeStyles.cardIncorrect]}>
-              <Card.Title style={homeStyles.cardTitle}>{exercise.options[4]}</Card.Title>
+            <Text style={homeStyles.cardTitle}>{exercise.options[4]}</Text>
             </Card>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => {checkAnswer(exercise.options[5], 5)} } activeOpacity={0.8}>
             <Card containerStyle={[homeStyles.card, correct == 5 && homeStyles.cardCorrect, incorrect == 5 && homeStyles.cardIncorrect]}>
-              <Card.Title style={homeStyles.cardTitle}>{exercise.options[5]}</Card.Title>
+            <Text style={homeStyles.cardTitle}>{exercise.options[5]}</Text>
             </Card>
           </TouchableOpacity>
-        </View>}
-      </View>
+        </View>
+      )}
+
+      <Text style={homeStyles.type}>{TypeToInstruction(exercise.type)}</Text>
     </View>
   )
 }
@@ -94,29 +122,34 @@ const homeStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    height: Dimensions.get('window').height - 110,
+    minHeight: Dimensions.get('window').height - 120,
   },
   title: {
-    fontSize: 30,
+    fontSize: 26,
     textAlign: 'center',
-    color: colors.lightPrimary,
-    fontWeight: 'bold'
+    color: colors.darkPrimary,
+    fontWeight: 'bold',
   },
   type: {
-    marginTop: 40,
-    fontSize: 27,
+    marginTop: 30,
+    fontSize: 20,
     textAlign: 'center',
+    fontStyle: 'italic',
     color: colors.darkPrimary
   },
   sentence: {
-    marginTop: 20,
-    fontSize: 25,
+    marginTop: 30,
+    fontSize: 23,
     textAlign: 'center',
     color: colors.primary,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    minHeight: 60,
   },
   titleContainer: {
-    marginTop: 0
+    marginTop: 5,
+    marginBottom: 15,
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   answerRowContainer: {
     marginTop: 0,
@@ -126,11 +159,10 @@ const homeStyles = StyleSheet.create({
   },
   buttonsContainer: {
     width: '100%',
-    marginTop: 50,
+    marginTop: 10
     
   },
   card: {
-    width: 180,
     height: 70,
     borderRadius: 10,
     borderWidth: 0,
@@ -143,6 +175,8 @@ const homeStyles = StyleSheet.create({
     shadowRadius: 5.46,
     elevation: 9,
     backgroundColor: colors.lightPrimary,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   cardCorrect: {
     backgroundColor: colors.correct
@@ -154,6 +188,7 @@ const homeStyles = StyleSheet.create({
     fontSize: 18,
     color: colors.darkPrimary,
     fontWeight: 'bold',
+    textAlign: 'center'
   },
   spacer: {
     height: 100

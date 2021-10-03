@@ -26,7 +26,6 @@ export const CustomHeaderScreen = ({
   
   return (
     <View style={{flex: 1}}>
-      {logo ? (
         <View style={customScreenStyles.container_logo}>
           <StatusBar barStyle="light-content" />
           
@@ -49,7 +48,7 @@ export const CustomHeaderScreen = ({
               left: 0,
               right: 0,
               top: 0,
-              height: 80}}
+              height: 80+ (top ? top : 0)}}
             />
             <View
               style={{
@@ -79,34 +78,17 @@ export const CustomHeaderScreen = ({
           </View>
           
 
-          <CustomKeyboardAvoidingView style={{flex: 1}}>
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps={'handled'}
-            >
-              {children}
-            </ScrollView>
-          </CustomKeyboardAvoidingView>
-        </View>
-      ) : (
-        <View style={{ ...customScreenStyles.container, marginTop: margin }}>
-          <View style={customScreenStyles.header}>
-            {back && <CustomBackArrow />}
-            <View style={customScreenStyles.title}>
-              <Text style={styles.title}>{title}</Text>
-            </View>
-          </View>
           <CustomKeyboardAvoidingView>
             <ScrollView
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps={'handled'}
             >
-              {children}
+              <View style={customScreenStyles.container}>
+                {children}
+              </View>
             </ScrollView>
           </CustomKeyboardAvoidingView>
         </View>
-      )}
-
   </View>
   )
 }

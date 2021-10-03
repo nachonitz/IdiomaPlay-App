@@ -7,6 +7,7 @@ import { CustomExercise } from '../components/CustomExercise';
 import { ParamListBase, useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens } from '../navigator/Screens';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // TODO: mejorar tipos en el route
 // interface Props {
@@ -18,6 +19,7 @@ export const ExercisesScreen = ({route}:any) => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
   const [exercises, setExercises] = useState([]);
   const [currentExercise, setcurrentExercise] = useState(0)
+  const {bottom} = useSafeAreaInsets()
 
   const getExercises = async () => {
     try {
@@ -66,7 +68,7 @@ export const ExercisesScreen = ({route}:any) => {
   }, []);
 
   return (
-    <CustomHeaderScreen logo  back>
+    <CustomHeaderScreen back>
       <View style={homeStyles.container}>
         {exercises.length > 0 && 
           <CustomExercise 
@@ -74,6 +76,7 @@ export const ExercisesScreen = ({route}:any) => {
             finishExercise={finishExercise}
           />}
       </View>
+      <View style={homeStyles.spacer}/>
     </CustomHeaderScreen>
   )
 }
@@ -98,14 +101,6 @@ const homeStyles = StyleSheet.create({
   cardTitle: {
     fontSize: 20
   },
-  cardDescription: {
-    fontSize: 17,
-    marginBottom: 15
-  },
-  cardSubtitle: {
-    fontSize: 15,
-    color: 'grey'
-  }, 
   spacer: {
     height: 100
   }

@@ -80,7 +80,7 @@ export const HomeScreen = () => {
           key={lesson.id}
         >
           <Card containerStyle={[homeStyles.card, completedLessons[index] && {backgroundColor: colors.correct}]}>
-            <Card.Title style={homeStyles.cardTitle}>{lesson.title}</Card.Title>
+            <Text style={homeStyles.cardTitle}>{lesson.title}</Text>
           </Card>
         </TouchableOpacity>
       ))}
@@ -98,7 +98,7 @@ export const HomeScreen = () => {
           disabled={false}
         >
           <Card containerStyle={[homeStyles.card, {backgroundColor: colors.lightPrimary}]}>
-            <Card.Title style={homeStyles.cardTitle}>Test</Card.Title>
+            <Text style={homeStyles.cardTitle}>Test</Text>
           </Card>
         </TouchableOpacity>
       
@@ -114,6 +114,7 @@ const homeStyles = StyleSheet.create({
     marginTop: 20
   },
   card: {
+    height: 75,
     borderRadius: 10,
     borderWidth: 0,
     shadowColor: "#000",
@@ -124,10 +125,15 @@ const homeStyles = StyleSheet.create({
     shadowOpacity: 0.32,
     shadowRadius: 5.46,
     elevation: 9,
-    marginBottom: 15
+    marginBottom: 15,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   cardTitle: {
-    fontSize: 20
+    fontSize: 22,
+    color: colors.darkPrimary,
+    fontWeight: 'bold',
+    textAlign: 'center'
   },
   cardDescription: {
     fontSize: 17,
