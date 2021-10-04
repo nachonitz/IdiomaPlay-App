@@ -4,4 +4,5 @@ export const colors = {
   darkPrimary: 'rgba(31, 110, 135	, 1)',
   correct: '#90ee90',
   wrong: '#ff7f8a',
+  background: '#e8f4f8'
 }

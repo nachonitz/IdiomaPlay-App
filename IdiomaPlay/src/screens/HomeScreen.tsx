@@ -126,18 +126,19 @@ const homeStyles = StyleSheet.create({
   card: {
     height: 75,
     borderRadius: 10,
-    borderWidth: 0,
+    borderWidth: 0.5,
+    borderColor: 'lightgrey',
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.32,
-    shadowRadius: 5.46,
+    shadowOpacity: 0.4,
+    shadowRadius: 5.4,
     elevation: 9,
     marginBottom: 15,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   cardTitle: {
     fontSize: 22,
