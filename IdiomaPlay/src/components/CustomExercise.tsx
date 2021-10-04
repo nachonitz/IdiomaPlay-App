@@ -8,39 +8,66 @@ import { useNavigation } from '@react-navigation/core';
 import { Screens } from '../navigator/Screens';
 import { Exercise } from '../interface/AppInterface';
 import { TypeToInstruction } from '../services/Dictionary';
+import { CustomSnackBar } from './CustomSnackBar';
 
 interface Props {
   exercise: Exercise
+  isExam: boolean
   finishExercise: () => void
   failExercise: () => void
 }
 
-export const CustomExercise = ({exercise, finishExercise, failExercise}: Props) => {
+export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}: Props) => {
   const [correct, setCorrect] = useState(-1)
   const [incorrect, setIncorrect] = useState(-1)
   const [fails, setFails] = useState(0)
+  const [showMessage, setshowMessage] = useState(false)
+  const [messageText, setmessageText] = useState('')
 
   const checkAnswer = (option: string, index: number) => {
     if (option.localeCompare(exercise.correctOption) === 0) {
+      setshowMessage(true)
+      setmessageText('Respuesta correcta!')
       setCorrect(index)
       setIncorrect(-1)
       setTimeout(() => {
+        setshowMessage(false)
         finishExercise()
+        
+        // Clear exercise
         setCorrect(-1)
         setIncorrect(-1)
-      }, 1000);
+        setFails(0)
+      }, 3000);
     } else {
-      setFails(fails + 1)
-      if (fails === 2) {
-        failExercise()
-        finishExercise()
-      }
       setIncorrect(index)
+      if (isExam || fails > 0) {
+        setshowMessage(true)
+        setmessageText('Respuesta incorrecta')
+        setTimeout(() => {
+          
+          failExercise()
+
+          // Clear exercise
+          setCorrect(-1)
+          setIncorrect(-1)
+          setFails(0)
+          setshowMessage(false)
+        }, 3000);
+      }else{
+        setFails(fails + 1)
+        setshowMessage(true)
+        setmessageText('Respuesta incorrecta, vuelve a intentarlo!')
+        setTimeout(() => {
+          setshowMessage(false)
+        }, 3000);
+      }
     }
   }
 
   return (
     <View style={homeStyles.container}>
+      <CustomSnackBar visible={showMessage} message={messageText} error={incorrect != -1}/>
     
       <View style={homeStyles.titleContainer}>
         <Text style={homeStyles.title}>{exercise.title}</Text>

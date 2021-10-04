@@ -10,18 +10,23 @@ import { Screens } from '../navigator/Screens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import IdiomaPlayApi from '../api/IdiomaPlayApi';
 
+import { colors } from '../theme/colors';
+
+
 // TODO: mejorar tipos en el route
 // interface Props {
 //   finishLesson: () => void
 
 // }
 
+
+
 export const ExercisesScreen = ({route}:any) => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
   const [exercises, setExercises] = useState([]);
   const [currentExercise, setcurrentExercise] = useState(0)
-  const {bottom} = useSafeAreaInsets()
   const [failedExercises, setFailedExercises] = useState(0)
+  const MAX_FAILED_EXERCISES = route.params.isExam? 4 : 2
 
   const getExercises = async () => {
     try {
@@ -51,28 +56,37 @@ export const ExercisesScreen = ({route}:any) => {
     }
   };
 
-  const failExercise = async () => {
+  const failExercise = () => {
+    finishExercise(true)
     setFailedExercises(failedExercises + 1)
   }
 
 
-  const finishExercise = async () => {
-    if(currentExercise < exercises.length - 1){
-      setcurrentExercise(currentExercise + 1)
-    }else{
-      try {
-      const resp = await IdiomaPlayApi.post('/participations',
-      {
-        'userId': 1,
-        'unitId': 1,
-        'lessonId': route.params.lessonId,
-        'correctExercises': 1
-      })
+  const finishExercise = async (failed?: boolean) => {
+    if(failedExercises >= MAX_FAILED_EXERCISES && failed){
+      // Failed lesson
       navigation.navigate(Screens.home)
-      } catch (error) {
-        console.error(error);
+    }else {
+      if(currentExercise < exercises.length - 1){
+        setcurrentExercise(currentExercise + 1)
+      }
+      else{
+        try {
+        const resp = await IdiomaPlayApi.post('/participations',
+        {
+          'userId': 1,
+          'unitId': 1,
+          'lessonId': route.params.isExam? undefined : route.params.lessonId,
+          'examId': route.params.isExam? 1 : undefined,
+          'correctExercises': 1
+        })
+        navigation.navigate(Screens.home)
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
+    
   }
 
   useEffect(() => {
@@ -91,9 +105,11 @@ export const ExercisesScreen = ({route}:any) => {
             exercise={exercises[currentExercise]} 
             finishExercise={finishExercise}
             failExercise={failExercise}
+            isExam={route.params.isExam}
           />}
       </View>
       <View style={homeStyles.spacer}/>
+      
     </CustomHeaderScreen>
   )
 }
