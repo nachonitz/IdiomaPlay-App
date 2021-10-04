@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, StatusBar, StyleSheet, Text, View, Image, Dimensions } from 'react-native';
+import { ScrollView, StatusBar, StyleSheet, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { styles } from '../theme/appTheme'
 import { colors } from '../theme/colors'
@@ -7,6 +7,8 @@ import { CustomBackArrow } from './CustomBackArrow'
 import { CustomKeyboardAvoidingView } from './CustomKeyboardAvoidingView'
 import { CustomProfileButton } from './CustomProfileButton'
 import { LinearGradient } from 'expo-linear-gradient';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { ProgressBar } from 'react-native-paper';
 
 export const CustomHeaderScreen = ({
   children,
@@ -26,69 +28,69 @@ export const CustomHeaderScreen = ({
   
   return (
     <View style={{flex: 1}}>
-        <View style={customScreenStyles.container_logo}>
-          <StatusBar barStyle="light-content" />
-          
+      <View style={customScreenStyles.container_logo}>
+        <StatusBar barStyle="light-content" />
+        
+        <View
+          style={{
+            ...customScreenStyles.headerContainer,
+            paddingTop: top ? top : 10,
+            height: 65 + (top ? top : 5),
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: styles.globalMargin.marginHorizontal,
+            paddingBottom: 10
+          }}
+        >
+          <LinearGradient
+            // Background Linear Gradient
+            colors={[colors.darkPrimary, colors.primary, colors.lightPrimary, 'white']}
+            style={{position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            height: 80+ (top ? top : 0)}}
+          />
           <View
             style={{
-              ...customScreenStyles.headerContainer,
-              paddingTop: top ? top : 10,
-              height: 65 + (top ? top : 5),
-              flexDirection: 'row',
+              width: '7%',
               alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: styles.globalMargin.marginHorizontal,
-              paddingBottom: 10
+              justifyContent: 'center',
             }}
           >
-            <LinearGradient
-              // Background Linear Gradient
-              colors={[colors.darkPrimary, colors.primary, colors.lightPrimary, 'white']}
-              style={{position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              height: 80+ (top ? top : 0)}}
-            />
-            <View
-              style={{
-                width: '7%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {back && <CustomBackArrow white />}
-            </View>
-
-            <View>
-              <Text style={customScreenStyles.idiomaPlay}>IdiomaPlay</Text>
-            </View>
-
-            <View
-              style={{
-                width: '7%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {profile && (
-                <CustomProfileButton white/>
-              )}
-            </View>
+            {back && <CustomBackArrow white />}
           </View>
-          
 
-          <CustomKeyboardAvoidingView>
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps={'handled'}
-            >
-              <View style={customScreenStyles.container}>
-                {children}
-              </View>
-            </ScrollView>
-          </CustomKeyboardAvoidingView>
+          <View>
+            <Text style={customScreenStyles.idiomaPlay}>IdiomaPlay</Text>
+          </View>
+
+          <View
+            style={{
+              width: '7%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {profile && (
+              <CustomProfileButton white/>
+            )}
+          </View>
         </View>
+        
+
+        <CustomKeyboardAvoidingView>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps={'handled'}
+          >
+            <View style={customScreenStyles.container}>
+              {children}
+            </View>
+          </ScrollView>
+        </CustomKeyboardAvoidingView>
+      </View>
   </View>
   )
 }
@@ -96,7 +98,7 @@ export const CustomHeaderScreen = ({
 const customScreenStyles = StyleSheet.create({
   container: {
     ...styles.globalMargin, 
-    flex: 1
+    flex: 1,
   },
   header: {
     flexDirection: 'row',

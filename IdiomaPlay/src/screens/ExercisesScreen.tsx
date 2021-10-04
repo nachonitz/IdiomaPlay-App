@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Touchable, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, Touchable, TouchableOpacity, Modal, Dimensions } from 'react-native';
 import { CustomHeaderScreen } from '../components/CustomHeaderScreen'
 import { styles } from '../theme/appTheme'
 import { Card } from 'react-native-elements'
@@ -13,6 +13,8 @@ import CountDown from 'react-native-countdown-component';
 
 import { colors } from '../theme/colors';
 import { color } from 'react-native-elements/dist/helpers';
+import { CustomExerciseHeader } from '../components/CustomExerciseHeader';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 
 // TODO: mejorar tipos en el route
@@ -33,6 +35,7 @@ export const ExercisesScreen = ({route}:any) => {
   const [showModal, setShowModal] = useState(false)
   const [messageModal, setMessageModal] = useState("")
   const MAX_FAILED_EXERCISES = route.params.isExam? 4 : 2
+  const [failedLesson, setfailedLesson] = useState(false)
 
   const getExercises = async () => {
     try {
@@ -72,10 +75,11 @@ export const ExercisesScreen = ({route}:any) => {
   const finishExercise = async (failed?: boolean) => {
     if(failedExercises >= MAX_FAILED_EXERCISES && failed){
       // Failed lesson
+      setfailedLesson(true)
       if (route.params.isExam) {
-        setMessageModal("No has logrado completar correctamente el examen, vuelve a intentarlo")
+        setMessageModal("No has logrado completar correctamente el examen, vuelve a intentarlo!")
       } else {
-        setMessageModal("No has logrado completar correctamente la lección, vuelve a intentarlo")
+        setMessageModal("No has logrado completar correctamente la lección, vuelve a intentarlo!")
       }
       setShowModal(true)
     }else {
@@ -124,7 +128,14 @@ export const ExercisesScreen = ({route}:any) => {
   }, [navigation]);
 
   return (
-    <CustomHeaderScreen back>
+    <CustomExerciseHeader
+      lives={MAX_FAILED_EXERCISES - failedExercises + 1}
+      currentExercise={currentExercise + 1}
+      maxExercises={exercises.length}
+      // lives={0}
+      // currentExercise={0}
+      // maxExercises={0}
+    >
       {duration && route.params.isExam && <CountDown
         until={duration}
         onFinish={() => {
@@ -160,16 +171,29 @@ export const ExercisesScreen = ({route}:any) => {
         // }}
         >
         <View style={{backgroundColor:'rgba(0,0,0,0.6)',justifyContent:'center',flex:1,alignItems:'center'}}>
-          <View style={[{backgroundColor:'white', height:270,width:270,alignItems:'center',justifyContent:'space-evenly',paddingHorizontal:20, paddingVertical:30},homeStyles.card]}>
+          <View style={[{
+            backgroundColor:'white',
+            height:Dimensions.get('window').height * 0.55,
+            width:Dimensions.get('window').width * 0.8,
+            alignItems:'center',
+            justifyContent:'space-evenly',
+            paddingHorizontal:20,
+            paddingVertical:30},
+            homeStyles.card]}>  
+            {failedLesson
+              ? <Icon name='sad-outline' size={90} color={colors.wrong}/>
+              : <Icon name='happy-outline' size={90} color={colors.correct}/>
+            }
+            
             <Text style={{fontSize:23, color:colors.darkPrimary, textAlign:'center'}}>{messageModal}</Text>
 
             <TouchableOpacity
-              style={[{ backgroundColor: colors.lightPrimary, width:100,height:40,justifyContent:'center',alignItems:'center' },homeStyles.card]}
+              style={[{ backgroundColor: colors.primary, width:'80%',height:50,justifyContent:'center',alignItems:'center' },homeStyles.card]}
               onPress={() => {
                 navigation.navigate(Screens.home)
                 setShowModal(false)
               }}>
-              <Text style={{fontSize:16, fontWeight:'bold'}}>OK</Text>
+              <Text style={{fontSize:20, fontWeight:'bold', color: 'white'}}>Volver a la unidad</Text>
             </TouchableOpacity>
 
           </View>
@@ -177,7 +201,7 @@ export const ExercisesScreen = ({route}:any) => {
         </View>
       </Modal>
       
-    </CustomHeaderScreen>
+    </CustomExerciseHeader>
   )
 }
 
