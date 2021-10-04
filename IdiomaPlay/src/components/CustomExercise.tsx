@@ -23,14 +23,17 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
   const [fails, setFails] = useState(0)
   const [showMessage, setshowMessage] = useState(false)
   const [messageText, setmessageText] = useState('')
+  const [disableButtons, setDisableButtons] = useState(false)
 
   const checkAnswer = (option: string, index: number) => {
     if (option.localeCompare(exercise.correctOption) === 0) {
+      setDisableButtons(true)
       setshowMessage(true)
       setmessageText('Respuesta correcta!')
       setCorrect(index)
       setIncorrect(-1)
       setTimeout(() => {
+        setDisableButtons(false)
         setshowMessage(false)
         finishExercise()
         
@@ -38,14 +41,15 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
         setCorrect(-1)
         setIncorrect(-1)
         setFails(0)
-      }, 3000);
+      }, 1500);
     } else {
       setIncorrect(index)
       if (isExam || fails > 0) {
+        setDisableButtons(true)
         setshowMessage(true)
         setmessageText('Respuesta incorrecta')
         setTimeout(() => {
-          
+          setDisableButtons(false)
           failExercise()
 
           // Clear exercise
@@ -53,14 +57,14 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
           setIncorrect(-1)
           setFails(0)
           setshowMessage(false)
-        }, 3000);
+        }, 1500);
       }else{
         setFails(fails + 1)
         setshowMessage(true)
         setmessageText('Respuesta incorrecta, vuelve a intentarlo!')
         setTimeout(() => {
           setshowMessage(false)
-        }, 3000);
+        }, 1500);
       }
     }
   }
@@ -78,13 +82,13 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
       ? (
         <View style={homeStyles.buttonsContainer}>
           <View style={homeStyles.answerRowContainer}>
-            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[0], 0)} } activeOpacity={0.8}>
+            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[0], 0)} } activeOpacity={0.8} disabled={disableButtons}>
               <Card containerStyle={[homeStyles.card, correct == 0 && homeStyles.cardCorrect, incorrect == 0 && homeStyles.cardIncorrect, {width: Dimensions.get('window').width*0.4}]}>
                 <Text style={homeStyles.cardTitle}>{exercise.options[0]}</Text>
               </Card>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[1], 1)} } activeOpacity={0.8}>
+            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[1], 1)} } activeOpacity={0.8} disabled={disableButtons}>
               <Card containerStyle={[homeStyles.card, correct == 1 && homeStyles.cardCorrect, incorrect == 1 && homeStyles.cardIncorrect, {width: Dimensions.get('window').width*0.4}]}>
               <Text style={homeStyles.cardTitle}>{exercise.options[1]}</Text>
               </Card>
@@ -92,13 +96,13 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
           </View>
 
           <View style={homeStyles.answerRowContainer}>
-            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[2], 2)} } activeOpacity={0.8}>
+            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[2], 2)} } activeOpacity={0.8} disabled={disableButtons}>
               <Card containerStyle={[homeStyles.card, correct == 2 && homeStyles.cardCorrect, incorrect == 2 && homeStyles.cardIncorrect, {width: Dimensions.get('window').width*0.4}]}>
               <Text style={homeStyles.cardTitle}>{exercise.options[2]}</Text>
               </Card>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[3], 3)} } activeOpacity={0.8}>
+            <TouchableOpacity onPress={() => {checkAnswer(exercise.options[3], 3)} } activeOpacity={0.8} disabled={disableButtons}>
               <Card containerStyle={[homeStyles.card, correct == 3 && homeStyles.cardCorrect, incorrect == 3 && homeStyles.cardIncorrect, {width: Dimensions.get('window').width*0.4}]}>
               <Text style={homeStyles.cardTitle}>{exercise.options[3]}</Text>
               </Card>
@@ -108,37 +112,37 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
       )
       : (
         <View style={homeStyles.buttonsContainer}>
-          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[0], 0)} } activeOpacity={0.8}>
+          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[0], 0)} } activeOpacity={0.8} disabled={disableButtons}>
             <Card containerStyle={[homeStyles.card, correct == 0 && homeStyles.cardCorrect, incorrect == 0 && homeStyles.cardIncorrect]}>
             <Text style={homeStyles.cardTitle}>{exercise.options[0]}</Text>
             </Card>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[1], 1)} } activeOpacity={0.8}>
+          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[1], 1)} } activeOpacity={0.8} disabled={disableButtons}>
             <Card containerStyle={[homeStyles.card, correct == 1 && homeStyles.cardCorrect, incorrect == 1 && homeStyles.cardIncorrect]}>
             <Text style={homeStyles.cardTitle}>{exercise.options[1]}</Text>
             </Card>
           </TouchableOpacity>
         
-          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[2], 2)} } activeOpacity={0.8}>
+          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[2], 2)} } activeOpacity={0.8} disabled={disableButtons}>
             <Card containerStyle={[homeStyles.card, correct == 2 && homeStyles.cardCorrect, incorrect == 2 && homeStyles.cardIncorrect]}>
             <Text style={homeStyles.cardTitle}>{exercise.options[2]}</Text>
             </Card>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[3], 3)} } activeOpacity={0.8}>
+          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[3], 3)} } activeOpacity={0.8} disabled={disableButtons}>
             <Card containerStyle={[homeStyles.card, correct == 3 && homeStyles.cardCorrect, incorrect == 3 && homeStyles.cardIncorrect]}>
             <Text style={homeStyles.cardTitle}>{exercise.options[3]}</Text>
             </Card>
           </TouchableOpacity>
         
-          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[4], 4)} } activeOpacity={0.8}>
+          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[4], 4)} } activeOpacity={0.8} disabled={disableButtons}>
             <Card containerStyle={[homeStyles.card, correct == 4 && homeStyles.cardCorrect, incorrect == 4 && homeStyles.cardIncorrect]}>
             <Text style={homeStyles.cardTitle}>{exercise.options[4]}</Text>
             </Card>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[5], 5)} } activeOpacity={0.8}>
+          <TouchableOpacity onPress={() => {checkAnswer(exercise.options[5], 5)} } activeOpacity={0.8} disabled={disableButtons}>
             <Card containerStyle={[homeStyles.card, correct == 5 && homeStyles.cardCorrect, incorrect == 5 && homeStyles.cardIncorrect]}>
             <Text style={homeStyles.cardTitle}>{exercise.options[5]}</Text>
             </Card>

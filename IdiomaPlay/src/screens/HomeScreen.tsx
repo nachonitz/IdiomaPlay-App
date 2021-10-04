@@ -14,6 +14,7 @@ export const HomeScreen = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
   const [lessons, setLessons] = useState([]);
   const [completedLessons, setcompletedLessons] = useState <Array<any>>([])
+  const [completedExam, setCompletedExam] = useState(false)
 
   const getLessons = async () => {
     try {
@@ -49,10 +50,15 @@ export const HomeScreen = () => {
         const participations = participationsResp.data.items;
         console.log(participations)
         for (var i = 0; i < length; i++){
+          const exam = participations[i].exam
+          if (exam) {
+            setCompletedExam(true)
+            continue
+          }
           const lessonId = participations[i].lesson.id
           const isCorrect = participations[i].correctExercises
           const index = completed.findIndex((element) => element.lessonId === lessonId)
-          completed[index] = {"lessonId":lessonId, value:true}
+          completed[index] = {"lessonId":lessonId, "value":true}
         }
       } catch (error) {
         console.error(error)
@@ -89,23 +95,22 @@ export const HomeScreen = () => {
           </Card>
         </TouchableOpacity>
       ))}
-
+        {lessons.length > 0 && completedLessons.length > 0 &&
         <TouchableOpacity
           onPress={() => {
             navigation.replace(
               Screens.exercises, 
-              { lessonId: 1, 
-                finishLesson: ()=> console.log('termino el examen'),
+              { lessonId: 1,
                 isExam: true
               }
             )}}
           activeOpacity={0.8}
-          disabled={false}
+          disabled={completedLessons.findIndex((element) => element.value === false) !== -1 || completedExam}
         >
-          <Card containerStyle={[homeStyles.card, {backgroundColor: colors.lightPrimary}]}>
+          <Card containerStyle={[homeStyles.card, {backgroundColor: completedExam?colors.correct: completedLessons.findIndex((element) => element.value === false) !== -1?'lightgrey' : colors.lightPrimary}]}>
             <Text style={homeStyles.cardTitle}>Test</Text>
           </Card>
-        </TouchableOpacity>
+        </TouchableOpacity>}
       
       <View style={homeStyles.spacer}/>
       </View>

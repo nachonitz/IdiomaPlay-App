@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Touchable, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Touchable, TouchableOpacity, Modal } from 'react-native';
 import { CustomHeaderScreen } from '../components/CustomHeaderScreen'
 import { styles } from '../theme/appTheme'
 import { Card } from 'react-native-elements'
@@ -9,8 +9,10 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Screens } from '../navigator/Screens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import IdiomaPlayApi from '../api/IdiomaPlayApi';
+import CountDown from 'react-native-countdown-component';
 
 import { colors } from '../theme/colors';
+import { color } from 'react-native-elements/dist/helpers';
 
 
 // TODO: mejorar tipos en el route
@@ -26,6 +28,10 @@ export const ExercisesScreen = ({route}:any) => {
   const [exercises, setExercises] = useState([]);
   const [currentExercise, setcurrentExercise] = useState(0)
   const [failedExercises, setFailedExercises] = useState(0)
+  const [duration, setDuration] = useState()
+  const [clockRunning, setClockRunning] = useState(true)
+  const [showModal, setShowModal] = useState(false)
+  const [messageModal, setMessageModal] = useState("")
   const MAX_FAILED_EXERCISES = route.params.isExam? 4 : 2
 
   const getExercises = async () => {
@@ -50,6 +56,7 @@ export const ExercisesScreen = ({route}:any) => {
       const exercises = await respondLessons.json();
       console.log(exercises)
       setExercises(exercises.exercises)
+      setDuration(exercises.examTimeInSeconds)
     } catch (error) {
       // setError(true);
       console.error(error);
@@ -65,7 +72,12 @@ export const ExercisesScreen = ({route}:any) => {
   const finishExercise = async (failed?: boolean) => {
     if(failedExercises >= MAX_FAILED_EXERCISES && failed){
       // Failed lesson
-      navigation.navigate(Screens.home)
+      if (route.params.isExam) {
+        setMessageModal("No has logrado completar correctamente el examen, vuelve a intentarlo")
+      } else {
+        setMessageModal("No has logrado completar correctamente la lección, vuelve a intentarlo")
+      }
+      setShowModal(true)
     }else {
       if(currentExercise < exercises.length - 1){
         setcurrentExercise(currentExercise + 1)
@@ -80,7 +92,12 @@ export const ExercisesScreen = ({route}:any) => {
           'examId': route.params.isExam? 1 : undefined,
           'correctExercises': 1
         })
-        navigation.navigate(Screens.home)
+        if (route.params.isExam){
+          setMessageModal("Felicitaciones! Has completado el examen correctamente")
+        } else {
+          setMessageModal("Felicitaciones! Has completado la lección correctamente")
+        }
+        setShowModal(true)
         } catch (error) {
           console.error(error);
         }
@@ -97,8 +114,32 @@ export const ExercisesScreen = ({route}:any) => {
     }
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      setClockRunning(false)
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <CustomHeaderScreen back>
+      {duration && route.params.isExam && <CountDown
+        until={duration}
+        onFinish={() => {
+          setMessageModal("Te has quedado sin tiempo");
+          setShowModal(true);
+        }}
+        timeToShow={['M', 'S']}
+        digitStyle={{backgroundColor: 'transparent'}}
+        timeLabels={{m: '', s: ''}}
+        separatorStyle={{color: colors.darkPrimary, fontSize:20}}
+        showSeparator={true}
+        digitTxtStyle={{color: colors.darkPrimary, fontSize:25}}
+        running={clockRunning}
+        size={20}
+      />}
       <View style={homeStyles.container}>
         {exercises.length > 0 && 
           <CustomExercise 
@@ -109,6 +150,32 @@ export const ExercisesScreen = ({route}:any) => {
           />}
       </View>
       <View style={homeStyles.spacer}/>
+      
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showModal}
+        // onRequestClose={() => {
+        //   navigation.navigate(Screens.home)
+        // }}
+        >
+        <View style={{backgroundColor:'rgba(0,0,0,0.6)',justifyContent:'center',flex:1,alignItems:'center'}}>
+          <View style={[{backgroundColor:'white', height:270,width:270,alignItems:'center',justifyContent:'space-evenly',paddingHorizontal:20, paddingVertical:30},homeStyles.card]}>
+            <Text style={{fontSize:23, color:colors.darkPrimary, textAlign:'center'}}>{messageModal}</Text>
+
+            <TouchableOpacity
+              style={[{ backgroundColor: colors.lightPrimary, width:100,height:40,justifyContent:'center',alignItems:'center' },homeStyles.card]}
+              onPress={() => {
+                navigation.navigate(Screens.home)
+                setShowModal(false)
+              }}>
+              <Text style={{fontSize:16, fontWeight:'bold'}}>OK</Text>
+            </TouchableOpacity>
+
+          </View>
+
+        </View>
+      </Modal>
       
     </CustomHeaderScreen>
   )
