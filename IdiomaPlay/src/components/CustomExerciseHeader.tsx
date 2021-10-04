@@ -1,8 +1,11 @@
+import { ParamListBase, useNavigation } from '@react-navigation/core'
+import { StackNavigationProp } from '@react-navigation/stack'
 import React from 'react'
 import { StatusBar, TouchableOpacity, View, Text, ScrollView, StyleSheet } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/Ionicons'
+import { Screens } from '../navigator/Screens'
 import { styles } from '../theme/appTheme'
 import { colors } from '../theme/colors'
 import { CustomKeyboardAvoidingView } from './CustomKeyboardAvoidingView'
@@ -21,6 +24,8 @@ export const CustomExerciseHeader = (
   
   const {top} = useSafeAreaInsets()
   const margin = top || 20
+  const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
+
   return (
     <View style={{flex: 1}}>
         <View style={customScreenStyles.container_logo}>
@@ -54,7 +59,7 @@ export const CustomExerciseHeader = (
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => {}}
+                  onPress={() => {navigation.navigate(Screens.home)}}
                   activeOpacity={0.6}
                 >
                   <Icon name='close' size={27} color={'grey'}/>
