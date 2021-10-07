@@ -9,6 +9,7 @@ import { Screens } from '../navigator/Screens';
 import { Exercise } from '../interface/AppInterface';
 import { TypeToInstruction } from '../services/Dictionary';
 import { CustomSnackBar } from './CustomSnackBar';
+import * as Speech from 'expo-speech';
 
 interface Props {
   exercise: Exercise
@@ -77,6 +78,20 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
         <Text style={homeStyles.title}>{exercise.title}</Text>
         <Text style={homeStyles.sentence}>{exercise.sentence.replace('*','__')}</Text>
       </View>
+
+      {(() => {
+        //Esto lo dice en ingles si es de tipo listen. El pitch y el rate los pueden ir variando para ver si se esucha mejor
+        if (exercise.type === 'listen'){
+          Speech.speak(exercise.sentence, {
+            language: 'en',
+            pitch: 0.8,
+            rate: 0.8,
+          })
+        } else {
+          console.log('No es de escuchar')
+        }
+       })()
+      }
 
       {exercise.type == 'complete'
       ? (

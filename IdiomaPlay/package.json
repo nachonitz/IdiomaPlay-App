@@ -14,6 +14,7 @@
     "axios": "^0.21.4",
     "expo": "~42.0.1",
     "expo-linear-gradient": "~9.2.0",
+    "expo-speech": "^9.2.1",
     "expo-status-bar": "~1.0.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
