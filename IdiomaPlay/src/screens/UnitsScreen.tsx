@@ -9,6 +9,7 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import IdiomaPlayApi from '../api/IdiomaPlayApi';
 import { colors } from '../theme/colors';
 import { config } from '../../Configuration';
+import {VictoryPie} from 'victory'
 
 
 export const UnitsScreen = () => {
@@ -131,7 +132,10 @@ export const UnitsScreen = () => {
         >
           <Card containerStyle={[homeStyles.card, unitsInfo[index].value && {backgroundColor: colors.correct}]}>
             <Text style={homeStyles.cardTitle}>{unit.title}</Text>
-            <Text>{unitsInfo[index].completedLessons} de {unitsInfo[index].numberOfLessons}</Text>
+            <View style={{flexDirection: 'row'}}>
+              
+              <Text>{unitsInfo[index].completedLessons} de {unitsInfo[index].numberOfLessons}</Text>
+            </View>
           </Card>
         </TouchableOpacity>
       ))}
@@ -160,7 +164,7 @@ const homeStyles = StyleSheet.create({
     shadowRadius: 5.4,
     elevation: 9,
     marginBottom: 15,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   cardTitle: {

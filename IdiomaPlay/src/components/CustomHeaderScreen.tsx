@@ -39,19 +39,12 @@ export const CustomHeaderScreen = ({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingHorizontal: styles.globalMargin.marginHorizontal,
-            paddingBottom: 10
+            paddingHorizontal: styles.globalMargin.marginHorizontal*2,
+            paddingBottom: 10,
+            backgroundColor: colors.primary
           }}
         >
-          <LinearGradient
-            // Background Linear Gradient
-            colors={[colors.darkPrimary, colors.primary, colors.lightPrimary, 'white']}
-            style={{position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            height: 80+ (top ? top : 0)}}
-          />
+          
           <View
             style={{
               width: '7%',

@@ -27,7 +27,7 @@ export const WelcomeScreen = () => {
     if (response?.type === 'success') {
       const { authentication } = response;
       console.log(response)
-      navigation.navigate(Screens.units)
+      navigation.replace(Screens.units)
     }
   }, [response]);
 
@@ -35,7 +35,17 @@ export const WelcomeScreen = () => {
     <View style={{...styles.globalMargin, justifyContent: 'center'}}>
       <Image source={require('../assets/logo_white.jpg')} resizeMode={'contain'} style={homeStyles.logo}/>
       <Text style={homeStyles.text}>IdiomaPlay</Text>
-      <CustomButton label={'Google Login'} disabled={!request} onPress={()=>{promptAsync()}}/>
+      <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+        <Image
+          source={require('../assets/google.png')}
+          style={{
+            width: 50,
+            height: 50,
+          }}
+        />
+        <CustomButton label={'Sign in with Google'} disabled={!request} onPress={()=>{promptAsync()}}/>
+        
+      </View>
     </View>
   )
 }
