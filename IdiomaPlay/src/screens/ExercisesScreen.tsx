@@ -190,7 +190,7 @@ export const ExercisesScreen = ({route}:any) => {
             <TouchableOpacity
               style={[{ backgroundColor: colors.primary, width:'80%',height:50,justifyContent:'center',alignItems:'center' },homeStyles.card]}
               onPress={() => {
-                navigation.navigate(Screens.home)
+                navigation.navigate(Screens.lessons, {unitId: route.params.unitId})
                 setShowModal(false)
               }}>
               <Text style={{fontSize:20, fontWeight:'bold', color: 'white'}}>Volver a la unidad</Text>

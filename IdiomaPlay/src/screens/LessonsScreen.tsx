@@ -10,7 +10,7 @@ import IdiomaPlayApi from '../api/IdiomaPlayApi';
 import { colors } from '../theme/colors';
 
 
-export const HomeScreen = () => {
+export const LessonsScreen = ({route}:any) => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
   const [lessons, setLessons] = useState([]);
   const [completedLessons, setcompletedLessons] = useState <Array<any>>([])
@@ -18,18 +18,13 @@ export const HomeScreen = () => {
 
   const getLessons = async () => {
     try {
-      const resp = await IdiomaPlayApi.get('/lessons',
-      { 
-        params: {
-          'limit': 20
-        }
-      }
-    )
-      setLessons(resp.data.items)
-      console.log(resp.data.items)
+      console.log(route.params.unitId)
+      const resp = await IdiomaPlayApi.get('/units/' + route.params.unitId)
+      setLessons(resp.data.lessons)
+      console.log(resp.data.lessons)
       const completed: Array<any> = []
-      const length = resp.data.items.length
-      const lessons = resp.data.items;
+      const length = resp.data.lessons.length
+      const lessons = resp.data.lessons;
       for(var i = 0; i < length; i++){
         const lessonId = lessons[i].id;
         const dict = {"lessonId":lessonId, "value":false}
@@ -46,6 +41,7 @@ export const HomeScreen = () => {
           }
         }
         )
+        console.log(participationsResp)
         const length = participationsResp.data.items.length
         const participations = participationsResp.data.items;
         console.log(participations)
@@ -83,7 +79,8 @@ export const HomeScreen = () => {
           onPress={() => {
             navigation.replace(
               Screens.exercises, 
-              { lessonId: lesson['id']
+              { lessonId: lesson['id'],
+                unitId: route.params.unitId
               }
             )}}
           activeOpacity={0.8}
@@ -101,7 +98,8 @@ export const HomeScreen = () => {
             navigation.replace(
               Screens.exercises, 
               { lessonId: 1,
-                isExam: true
+                isExam: true,
+                unitId: route.params.unitId
               }
             )}}
           activeOpacity={0.8}

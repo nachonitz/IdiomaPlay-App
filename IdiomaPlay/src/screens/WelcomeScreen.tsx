@@ -14,7 +14,7 @@ export const WelcomeScreen = () => {
     <View style={{...styles.globalMargin, justifyContent: 'center'}}>
       <Image source={require('../assets/logo_white.jpg')} resizeMode={'contain'} style={homeStyles.logo}/>
       <Text style={homeStyles.text}>IdiomaPlay</Text>
-      <CustomButton label={'Comenzar'} onPress={()=>{navigation.navigate(Screens.home)}}/>
+      <CustomButton label={'Comenzar'} onPress={()=>{navigation.navigate(Screens.units)}}/>
     </View>
   )
 }
