@@ -6,9 +6,10 @@ interface Props {
   label: string
   onPress?: () => void
   secondary?: boolean
+  disabled?: boolean
 }
 
-export const CustomButton = ({label, onPress, secondary}: Props) => {
+export const CustomButton = ({label, onPress, secondary, disabled = false}: Props) => {
   return (
     <TouchableOpacity
       style={{
@@ -17,6 +18,7 @@ export const CustomButton = ({label, onPress, secondary}: Props) => {
       }}
       onPress={onPress}
       activeOpacity={0.8}
+      disabled={disabled}
     >
       <Text style={buttonStyles.text}>{label}</Text>
     </TouchableOpacity>
