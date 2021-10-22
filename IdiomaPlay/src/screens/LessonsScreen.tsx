@@ -139,7 +139,7 @@ const homeStyles = StyleSheet.create({
     alignItems: 'center',
   },
   cardTitle: {
-    fontSize: 22,
+    fontSize: 18,
     color: colors.darkPrimary,
     fontWeight: 'bold',
     textAlign: 'center'

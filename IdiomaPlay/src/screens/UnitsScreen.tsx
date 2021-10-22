@@ -8,6 +8,7 @@ import { Screens } from '../navigator/Screens';
 import { StackNavigationProp } from '@react-navigation/stack'
 import IdiomaPlayApi from '../api/IdiomaPlayApi';
 import { colors } from '../theme/colors';
+import { config } from '../../Configuration';
 
 
 export const UnitsScreen = () => {
@@ -99,7 +100,7 @@ export const UnitsScreen = () => {
       )
 
       let completedLessons = resp.data.items.filter(function(item:any){
-        return item.exam == null;
+        return item.exam == null && item.correctExercises >= config.passingAmountOfExcercisesPerLesson;
       }).length;
       console.log(completedLessons)
       return completedLessons
@@ -146,7 +147,7 @@ const homeStyles = StyleSheet.create({
     marginTop: 20
   },
   card: {
-    height: 75,
+    height: 125,
     borderRadius: 10,
     borderWidth: 0.5,
     borderColor: 'lightgrey',
@@ -163,7 +164,7 @@ const homeStyles = StyleSheet.create({
     alignItems: 'center',
   },
   cardTitle: {
-    fontSize: 22,
+    fontSize: 18,
     color: colors.darkPrimary,
     fontWeight: 'bold',
     textAlign: 'center'

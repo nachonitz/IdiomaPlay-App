@@ -36,6 +36,25 @@ export const ExercisesScreen = ({route}:any) => {
   const [messageModal, setMessageModal] = useState("")
   const MAX_FAILED_EXERCISES = route.params.isExam? 4 : 2
   const [failedLesson, setfailedLesson] = useState(false)
+  const [participationID, setParticipationsID] = useState(-1)
+
+  const startParticipation = async () => {
+    try {
+      const participationResponse = await IdiomaPlayApi.post('/participations',
+      {
+        'userId': 1,
+        'unitId': route.params.unitId,
+        'lessonId': route.params.isExam? undefined : route.params.lessonId,
+        'examId': route.params.isExam? 1 : undefined,
+        'correctExercises': 0,
+      }
+      );
+
+      setParticipationsID(participationResponse.data.id)
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const getExercises = async () => {
     try {
@@ -83,6 +102,7 @@ export const ExercisesScreen = ({route}:any) => {
       }
       setShowModal(true)
     }else {
+      //TODO PATCH PARTICIPATION. CAMBIAR TODO
       if(currentExercise < exercises.length - 1){
         setcurrentExercise(currentExercise + 1)
       }
@@ -114,6 +134,7 @@ export const ExercisesScreen = ({route}:any) => {
     if (route.params.isExam){
       getExam();
     } else {
+      startParticipation();
       getExercises();
     }
   }, []);
