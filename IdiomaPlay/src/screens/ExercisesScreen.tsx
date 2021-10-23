@@ -35,6 +35,7 @@ export const ExercisesScreen = ({route}:any) => {
   const [showModal, setShowModal] = useState(false)
   const [messageModal, setMessageModal] = useState("")
   const MAX_FAILED_EXERCISES = route.params.isExam? 4 : 2
+  const [points, setPoints] = useState(0)
   const [failedLesson, setfailedLesson] = useState(false)
   const [participationID, setParticipationsID] = useState(-1)
 
@@ -70,10 +71,20 @@ export const ExercisesScreen = ({route}:any) => {
     }
   };
 
+  const getPoints = async () => {
+    try {
+      const response = await IdiomaPlayApi.get('/users/'+1);
+      const points = response.data.points
+      setPoints(points)
+    } catch (error) { 
+      console.error(error)
+    }
+  }
+
   const getExam = async () => {
     try {
       const respondLessons = await fetch(
-        "https://tp-tdp2.herokuapp.com/exams/" + 1
+        "https://tp-tdp2.herokuapp.com/exams/" + route.params.examId
       );
       const exercises = await respondLessons.json();
       console.log(exercises)
@@ -91,7 +102,7 @@ export const ExercisesScreen = ({route}:any) => {
   }
 
 
-  const finishExercise = async (failed?: boolean) => {
+  const finishExercise = async (failed?: boolean, isRetry?: boolean) => {
     if(failedExercises >= MAX_FAILED_EXERCISES && failed){
       // Failed lesson
       setfailedLesson(true)
@@ -102,35 +113,45 @@ export const ExercisesScreen = ({route}:any) => {
       }
       setShowModal(true)
     }else {
+      if (!route.params.isExam) {
+        const resp = await IdiomaPlayApi.patch('/participations/'+ participationID,
+        {
+          'userId': 1,
+          'unitId': route.params.unitId,
+          'lessonId': route.params.lessonId,
+          'examId': undefined,
+          'correctExercises': currentExercise + 1 - failedExercises,
+          "isRetry": isRetry
+        })
+        await getPoints()
+      }
       //TODO PATCH PARTICIPATION. CAMBIAR TODO
       if(currentExercise < exercises.length - 1){
         setcurrentExercise(currentExercise + 1)
       }
       else{
-        try {
-        const resp = await IdiomaPlayApi.post('/participations',
-        {
-          'userId': 1,
-          'unitId': 1,
-          'lessonId': route.params.isExam? undefined : route.params.lessonId,
-          'examId': route.params.isExam? 1 : undefined,
-          'correctExercises': 1
-        })
         if (route.params.isExam){
+          const resp = await IdiomaPlayApi.post('/participations',
+          {
+            'userId': 1,
+            'unitId': route.params.unitId,
+            'lessonId': undefined,
+            'examId': route.params.examId,
+            'correctExercises': currentExercise + 1 - failedExercises
+          })
           setMessageModal("Felicitaciones! Has completado el examen correctamente")
         } else {
           setMessageModal("Felicitaciones! Has completado la lección correctamente")
         }
         setShowModal(true)
-        } catch (error) {
-          console.error(error);
-        }
+
       }
     }
     
   }
 
   useEffect(() => {
+    getPoints()
     if (route.params.isExam){
       getExam();
     } else {
@@ -151,6 +172,7 @@ export const ExercisesScreen = ({route}:any) => {
   return (
     <CustomExerciseHeader
       lives={MAX_FAILED_EXERCISES - failedExercises + 1}
+      points={points}
       currentExercise={currentExercise + 1}
       maxExercises={exercises.length}
       // lives={0}

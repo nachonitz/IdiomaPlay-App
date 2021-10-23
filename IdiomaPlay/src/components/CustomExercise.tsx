@@ -14,7 +14,7 @@ import * as Speech from 'expo-speech';
 interface Props {
   exercise: Exercise
   isExam: boolean
-  finishExercise: () => void
+  finishExercise: (failed:boolean, isRetry:boolean) => void
   failExercise: () => void
 }
 
@@ -36,7 +36,8 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
       setTimeout(() => {
         setDisableButtons(false)
         setshowMessage(false)
-        finishExercise()
+        let isRetry = fails > 0;
+        finishExercise(false, isRetry)
         
         // Clear exercise
         setCorrect(-1)

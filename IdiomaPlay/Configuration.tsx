@@ -6,5 +6,6 @@ export const config = {
   passingPercentage: 0.8,
   amountOfOptionsPerCompletingExercise: 4,
   amountOfOptionsPerListeningAndTranslatingExercise: 6,
-  passingAmountOfExcercisesPerLesson: 6
+  passingAmountOfExcercisesPerLesson: 6,
+  passingAmountOfExcercisesPerExam: 12
 };

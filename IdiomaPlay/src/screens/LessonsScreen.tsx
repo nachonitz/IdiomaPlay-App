@@ -8,11 +8,13 @@ import { Screens } from '../navigator/Screens';
 import { StackNavigationProp } from '@react-navigation/stack'
 import IdiomaPlayApi from '../api/IdiomaPlayApi';
 import { colors } from '../theme/colors';
+import { config } from '../../Configuration';
 
 
 export const LessonsScreen = ({route}:any) => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
   const [lessons, setLessons] = useState([]);
+  const [examId, setExamId] = useState(-1);
   const [completedLessons, setcompletedLessons] = useState <Array<any>>([])
   const [completedExam, setCompletedExam] = useState(false)
 
@@ -20,6 +22,7 @@ export const LessonsScreen = ({route}:any) => {
     try {
       console.log(route.params.unitId)
       const resp = await IdiomaPlayApi.get('/units/' + route.params.unitId)
+      setExamId(resp.data.exam.id)
       setLessons(resp.data.lessons)
       console.log(resp.data.lessons)
       const completed: Array<any> = []
@@ -34,10 +37,10 @@ export const LessonsScreen = ({route}:any) => {
         const participationsResp = await IdiomaPlayApi.get('participations',
         {
           params: {
-            'limit': 20,
+            'limit': 500,
             'page': 1,
             'user': 1,
-            'unit': 1
+            'unit': route.params.unitId
           }
         }
         )
@@ -48,13 +51,18 @@ export const LessonsScreen = ({route}:any) => {
         for (var i = 0; i < length; i++){
           const exam = participations[i].exam
           if (exam) {
+            const examId = participations[i].exam.id
+            const correctExercises = participations[i].correctExercises
+            if (correctExercises >= config.passingAmountOfExcercisesPerExam)
             setCompletedExam(true)
             continue
           }
           const lessonId = participations[i].lesson.id
-          const isCorrect = participations[i].correctExercises
-          const index = completed.findIndex((element) => element.lessonId === lessonId)
-          completed[index] = {"lessonId":lessonId, "value":true}
+          const correctExercises = participations[i].correctExercises
+          if (correctExercises >= config.passingAmountOfExcercisesPerLesson) {
+            const index = completed.findIndex((element) => element.lessonId === lessonId)
+            completed[index] = {"lessonId":lessonId, "value":true}
+          }
         }
       } catch (error) {
         console.error(error)
@@ -98,6 +106,7 @@ export const LessonsScreen = ({route}:any) => {
             navigation.replace(
               Screens.exercises, 
               { lessonId: 1,
+                examId: examId,
                 isExam: true,
                 unitId: route.params.unitId
               }

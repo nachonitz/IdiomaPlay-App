@@ -14,10 +14,12 @@ export const CustomExerciseHeader = (
   {
     children,
     lives,
+    points,
     currentExercise,
     maxExercises,
   }: React.PropsWithChildren<{
     lives: number,
+    points: number,
     currentExercise: number,
     maxExercises : number,
   }>) => {
@@ -94,7 +96,7 @@ export const CustomExerciseHeader = (
                 <Text style={{fontSize: 17, fontWeight: '700', color: 'grey'}}>Vidas restantes: {lives}</Text>
               </View>
               <View>
-                <Text style={{fontSize: 17, fontWeight: '700', color: 'grey'}}>Puntuación: 70</Text>
+                <Text style={{fontSize: 17, fontWeight: '700', color: 'grey'}}>Puntuación: {points}</Text>
               </View>
             </View>
           </View>
@@ -150,7 +152,7 @@ export const CustomExerciseHeader = (
                   <TouchableOpacity
                     style={[{ backgroundColor: colors.wrong, width:'40%',height:50,justifyContent:'center',alignItems:'center' },customScreenStyles.card]}
                     onPress={() => {
-                      navigation.navigate(Screens.home)
+                      navigation.navigate(Screens.units)
                       setshowModal(false)
                     }}>
                     <Text style={{fontSize:20, fontWeight:'bold', color: 'white'}}>Salir</Text>

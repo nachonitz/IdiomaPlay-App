@@ -39,7 +39,7 @@ export const CustomHeaderScreen = ({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingHorizontal: styles.globalMargin.marginHorizontal*2,
+            paddingHorizontal: styles.globalMargin.marginHorizontal,
             paddingBottom: 10,
             backgroundColor: colors.primary
           }}
@@ -47,7 +47,7 @@ export const CustomHeaderScreen = ({
           
           <View
             style={{
-              width: '7%',
+              width: '10%',
               alignItems: 'center',
               justifyContent: 'center',
             }}
@@ -61,7 +61,7 @@ export const CustomHeaderScreen = ({
 
           <View
             style={{
-              width: '7%',
+              width: '10%',
               alignItems: 'center',
               justifyContent: 'center',
             }}

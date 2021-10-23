@@ -101,6 +101,7 @@ export const UnitsScreen = () => {
       )
 
       let completedLessons = resp.data.items.filter(function(item:any){
+        console.log(item)
         return item.exam == null && item.correctExercises >= config.passingAmountOfExcercisesPerLesson;
       }).length;
       console.log(completedLessons)
@@ -121,7 +122,7 @@ export const UnitsScreen = () => {
       {units.length > 0 && unitsInfo.length > 0 && units.map((unit:any, index) => (
         <TouchableOpacity
           onPress={() => {
-            navigation.replace(
+            navigation.navigate(
               Screens.lessons, 
               { unitId: unit['id']
               }
