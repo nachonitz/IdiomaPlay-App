@@ -113,7 +113,7 @@ export const ExercisesScreen = ({route}:any) => {
       }
       setShowModal(true)
     }else {
-      if (!route.params.isExam) {
+      if (!route.params.isExam && !failed) {
         const resp = await IdiomaPlayApi.patch('/participations/'+ participationID,
         {
           'userId': 1,
@@ -151,13 +151,13 @@ export const ExercisesScreen = ({route}:any) => {
   }
 
   useEffect(() => {
-    getPoints()
     if (route.params.isExam){
       getExam();
     } else {
       startParticipation();
       getExercises();
     }
+    getPoints()
   }, []);
 
   useEffect(() => {

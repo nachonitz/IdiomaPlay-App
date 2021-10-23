@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Touchable, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Touchable, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { CustomHeaderScreen } from './CustomHeaderScreen'
 import { styles } from '../theme/appTheme'
 import { Card } from 'react-native-elements'
@@ -25,6 +25,7 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
   const [showMessage, setshowMessage] = useState(false)
   const [messageText, setmessageText] = useState('')
   const [disableButtons, setDisableButtons] = useState(false)
+  const [listening, setListening] = useState(false)
 
   const checkAnswer = (option: string, index: number) => {
     if (option.localeCompare(exercise.correctOption) === 0) {
@@ -71,16 +72,34 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
     }
   }
 
+  const listenSentence = () => {
+    setListening(true)
+    Speech.speak(exercise.sentence, {
+      language: 'en',
+      pitch: 0.8,
+      rate: 0.8,
+      volume: -50,
+      onDone: () => {setListening(false)}
+    })
+  }
+
   return (
     <View style={homeStyles.container}>
       <CustomSnackBar visible={showMessage} message={messageText} error={incorrect != -1}/>
     
       <View style={homeStyles.titleContainer}>
         <Text style={homeStyles.title}>{exercise.title}</Text>
-        <Text style={homeStyles.sentence}>{exercise.sentence.replace('*','__')}</Text>
+        {exercise.type.localeCompare('listen') !== 0 && <Text style={homeStyles.sentence}>{exercise.sentence.replace('*','__')}</Text>}
+        
+        {exercise.type.localeCompare('listen') === 0 && !listening && 
+        <TouchableOpacity onPress={() => listenSentence()}>
+          <Image style={homeStyles.playButton} source={require('../../assets/PlayButton.png')}/>
+        </TouchableOpacity>}
+        {exercise.type.localeCompare('listen') === 0 && listening && 
+        <Image style={homeStyles.playButton} source={require('../../assets/PauseButton.png')}/>}
       </View>
 
-      {(() => {
+      {/* {(() => {
         //Esto lo dice en ingles si es de tipo listen. El pitch y el rate los pueden ir variando para ver si se esucha mejor
         if (exercise.type === 'listen'){
           Speech.speak(exercise.sentence, {
@@ -92,7 +111,7 @@ export const CustomExercise = ({exercise, isExam, finishExercise, failExercise}:
           console.log('No es de escuchar')
         }
        })()
-      }
+      } */}
 
       {exercise.type == 'complete'
       ? (
@@ -190,6 +209,11 @@ const homeStyles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
     color: colors.darkPrimary
+  },
+  playButton: {
+    marginTop: 30,
+    height: 80,
+    width: 80,
   },
   sentence: {
     marginTop: 30,
