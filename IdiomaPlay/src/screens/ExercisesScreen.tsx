@@ -47,7 +47,7 @@ export const ExercisesScreen = ({route}:any) => {
         'userId': 1,
         'unitId': route.params.unitId,
         'lessonId': route.params.isExam? undefined : route.params.lessonId,
-        'examId': route.params.isExam? 1 : undefined,
+        'examId': route.params.isExam? route.params.examId : undefined,
         'correctExercises': 0,
       }
       );
@@ -90,8 +90,7 @@ export const ExercisesScreen = ({route}:any) => {
       const exercises = await respondLessons.json();
       console.log(exercises)
       setExercises(exercises.exercises)
-      // setDuration(exercises.examTimeInSeconds)
-      setDuration(5)
+      setDuration(exercises.examTimeInSeconds)
     } catch (error) {
       // setError(true);
       console.error(error);
@@ -126,6 +125,7 @@ export const ExercisesScreen = ({route}:any) => {
       // Failed lesson
       setfailedLesson(true)
       if (route.params.isExam) {
+        startParticipation()
         setMessageModal("No has logrado completar correctamente el examen, vuelve a intentarlo!")
       } else {
         setMessageModal("No has logrado completar correctamente la lección, vuelve a intentarlo!")
@@ -265,6 +265,9 @@ export const ExercisesScreen = ({route}:any) => {
             <TouchableOpacity
               style={[{ backgroundColor: colors.primary, width:'80%',height:50,justifyContent:'center',alignItems:'center' },homeStyles.card]}
               onPress={() => {
+                if (duration === 0 && route.params.isExam){
+                  startParticipation()
+                }
                 navigation.navigate(Screens.lessons, {unitId: route.params.unitId})
                 setShowModal(false)
               }}>
