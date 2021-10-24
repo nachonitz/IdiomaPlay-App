@@ -23,6 +23,7 @@ export const LessonsScreen = ({ route }: any) => {
   const [examId, setExamId] = useState(-1);
   const [completedLessons, setcompletedLessons] = useState<Array<any>>([]);
   const [completedExam, setCompletedExam] = useState(false);
+  const [examOpportunities, setExamOpportunities] = useState(-1)
 
   const getLessons = async () => {
     try {
@@ -42,7 +43,6 @@ export const LessonsScreen = ({ route }: any) => {
       try {
         const participationsResp = await IdiomaPlayApi.get("participations", {
           params: {
-            limit: 500,
             page: 1,
             user: 1,
             unit: route.params.unitId,
@@ -80,8 +80,30 @@ export const LessonsScreen = ({ route }: any) => {
     }
   };
 
+  const getExamOpportunities = async () => {
+    try {
+      const resp = await IdiomaPlayApi.get('participations/',
+        {
+          params: {
+            page: 1,
+            user: 1,
+            unit: route.params.unitId,
+          }
+        }
+      )
+      const examParticipationsFailed = resp.data.items.filter(function(item:any){
+        return ((item.exam !== null) && (item.correctExercises < config.passingAmountOfExcercisesPerExam));
+      }).length
+      console.log(examOpportunities)
+      setExamOpportunities(3-examParticipationsFailed)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   useEffect(() => {
     getLessons();
+    getExamOpportunities();
   }, []);
 
   return (
@@ -173,7 +195,7 @@ export const LessonsScreen = ({ route }: any) => {
                 <Text style={{ ...homeStyles.cardTitle, color: "white" }}>
                   Exam
                 </Text>
-                {!completedExam &&
+                {!completedExam && examOpportunities !== -1 &&
                   !(
                     completedLessons.findIndex(
                       (element) => element.value === false
@@ -200,17 +222,17 @@ export const LessonsScreen = ({ route }: any) => {
                         <Icon
                           name="ellipse"
                           size={19}
-                          color={colors.darkPrimary}
+                          color={examOpportunities > 0 ? colors.darkPrimary : "lightgray"}
                         />
                         <Icon
                           name="ellipse"
                           size={19}
-                          color={colors.darkPrimary}
+                          color={examOpportunities > 1 ? colors.darkPrimary : "lightgray"}
                         />
                         <Icon
                           name="ellipse"
                           size={19}
-                          color={colors.darkPrimary}
+                          color={examOpportunities > 2 ? colors.darkPrimary : "lightgray"}
                         />
                       </View>
                     </View>
@@ -230,7 +252,7 @@ export const LessonsScreen = ({ route }: any) => {
                     ) !== -1
                   ) && (
                     <Text style={{ color: "white", fontStyle: "italic" }}>
-                      ¡3 oportunidades restantes!
+                      ¡{examOpportunities} {examOpportunities > 1 ? "oportunidades restantes!": "oportunidad restante!"}
                     </Text>
                   )}
               </View>
