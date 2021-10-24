@@ -1,6 +1,6 @@
 import { ParamListBase, useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   StatusBar,
   TouchableOpacity,
@@ -11,6 +11,7 @@ import {
   Modal,
   Dimensions,
   Image,
+  Animated,
 } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -27,17 +28,48 @@ export const CustomExerciseHeader = ({
   currentExercise,
   maxExercises,
   unitId,
+  isShowingEarnPointsAnimation,
+  setShowEarnPointsAnimation,
 }: React.PropsWithChildren<{
   lives: number;
   points: number;
   currentExercise: number;
   maxExercises: number;
   unitId: number;
+  isShowingEarnPointsAnimation: boolean;
+  setShowEarnPointsAnimation: (show: boolean) => void;
 }>) => {
   const { top } = useSafeAreaInsets();
   const margin = top || 20;
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const [showModal, setshowModal] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const onAnimationFinish = () => {
+    setShowEarnPointsAnimation(false);
+  };
+
+  useEffect(() => {
+    if (isShowingEarnPointsAnimation) {
+      Animated.sequence([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+      ]).start(onAnimationFinish);
+    }
+  }, [isShowingEarnPointsAnimation]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -134,6 +166,24 @@ export const CustomExerciseHeader = ({
               </Text>
             </View>
           </View>
+          <Animated.View
+            style={{
+              width: "100%",
+              opacity: fadeAnim,
+              alignItems: "flex-end",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 17,
+                fontWeight: "700",
+                color: "blue",
+                marginRight: 15,
+              }}
+            >
+              +10
+            </Text>
+          </Animated.View>
         </View>
 
         <CustomKeyboardAvoidingView>

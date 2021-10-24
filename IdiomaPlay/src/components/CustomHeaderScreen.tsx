@@ -1,55 +1,50 @@
-import React from 'react'
-import { ScrollView, StatusBar, StyleSheet, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { styles } from '../theme/appTheme'
-import { colors } from '../theme/colors'
-import { CustomBackArrow } from './CustomBackArrow'
-import { CustomKeyboardAvoidingView } from './CustomKeyboardAvoidingView'
-import { CustomProfileButton } from './CustomProfileButton'
-import { LinearGradient } from 'expo-linear-gradient';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { ProgressBar } from 'react-native-paper';
+import React from "react";
+import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { styles } from "../theme/appTheme";
+import { colors } from "../theme/colors";
+import { CustomBackArrow } from "./CustomBackArrow";
+import { CustomKeyboardAvoidingView } from "./CustomKeyboardAvoidingView";
+import { CustomProfileButton } from "./CustomProfileButton";
 
 export const CustomHeaderScreen = ({
   children,
-  title = '',
+  title = "",
   logo,
   back,
-  profile
+  profile,
 }: React.PropsWithChildren<{
   title?: string;
   logo?: boolean;
   back?: boolean;
   profile?: boolean;
 }>) => {
-  
-  const {top} = useSafeAreaInsets()
-  const margin = top || 20
-  
+  const { top } = useSafeAreaInsets();
+  const margin = top || 20;
+
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <View style={customScreenStyles.container_logo}>
         <StatusBar barStyle="light-content" />
-        
+
         <View
           style={{
             ...customScreenStyles.headerContainer,
             paddingTop: top ? top : 10,
             height: 65 + (top ? top : 5),
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
             paddingHorizontal: styles.globalMargin.marginHorizontal,
             paddingBottom: 10,
-            backgroundColor: colors.primary
+            backgroundColor: colors.primary,
           }}
         >
-          
           <View
             style={{
-              width: '10%',
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: "10%",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             {back && <CustomBackArrow white />}
@@ -61,57 +56,52 @@ export const CustomHeaderScreen = ({
 
           <View
             style={{
-              width: '10%',
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: "10%",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            {profile && (
-              <CustomProfileButton white/>
-            )}
+            {profile && <CustomProfileButton white />}
           </View>
         </View>
-        
 
         <CustomKeyboardAvoidingView>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps={'handled'}
+            keyboardShouldPersistTaps={"handled"}
           >
-            <View style={customScreenStyles.container}>
-              {children}
-            </View>
+            <View style={customScreenStyles.container}>{children}</View>
           </ScrollView>
         </CustomKeyboardAvoidingView>
       </View>
-  </View>
-  )
-}
+    </View>
+  );
+};
 
 const customScreenStyles = StyleSheet.create({
   container: {
-    ...styles.globalMargin, 
+    ...styles.globalMargin,
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center'
+    flexDirection: "row",
+    alignItems: "center",
   },
   title: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
-    marginRight: 25
+    marginRight: 25,
   },
   container_logo: {
     flex: 1,
   },
   headerContainer: {
     // backgroundColor: colors.primary,
-    width: '100%',
+    width: "100%",
   },
   idiomaPlay: {
-    color: 'white',
+    color: "white",
     fontSize: 30,
-    fontWeight: 'bold',
-  }
-})
+    fontWeight: "bold",
+  },
+});

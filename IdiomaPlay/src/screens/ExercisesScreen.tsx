@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Touchable, TouchableOpacity, Modal, Dimensions } from 'react-native';
-import { CustomHeaderScreen } from '../components/CustomHeaderScreen'
-import { styles } from '../theme/appTheme'
-import { Card } from 'react-native-elements'
-import { CustomExercise } from '../components/CustomExercise';
-import { ParamListBase, useNavigation } from '@react-navigation/core';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { Screens } from '../navigator/Screens';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import IdiomaPlayApi from '../api/IdiomaPlayApi';
-import CountDown from 'react-native-countdown-component';
-
-import { colors } from '../theme/colors';
-import { color } from 'react-native-elements/dist/helpers';
-import { CustomExerciseHeader } from '../components/CustomExerciseHeader';
-import Icon from 'react-native-vector-icons/Ionicons';
-
+import { ParamListBase, useNavigation } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
+import React, { useEffect, useState } from "react";
+import {
+  Dimensions,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import CountDown from "react-native-countdown-component";
+import Icon from "react-native-vector-icons/Ionicons";
+import IdiomaPlayApi from "../api/IdiomaPlayApi";
+import { CustomExercise } from "../components/CustomExercise";
+import { CustomExerciseHeader } from "../components/CustomExerciseHeader";
+import { Screens } from "../navigator/Screens";
+import { colors } from "../theme/colors";
 
 // TODO: mejorar tipos en el route
 // interface Props {
@@ -23,40 +23,41 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 // }
 
-
-
-export const ExercisesScreen = ({route}:any) => {
-  const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
+export const ExercisesScreen = ({ route }: any) => {
+  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const [exercises, setExercises] = useState([]);
-  const [currentExercise, setcurrentExercise] = useState(0)
-  const [failedExercises, setFailedExercises] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [clockRunning, setClockRunning] = useState(true)
-  const [showModal, setShowModal] = useState(false)
-  const [messageModal, setMessageModal] = useState("")
-  const MAX_FAILED_EXERCISES = route.params.isExam? 4 : 2
-  const [points, setPoints] = useState(0)
-  const [failedLesson, setfailedLesson] = useState(false)
-  const [participationID, setParticipationsID] = useState(-1)
-  const [boughtTime, setBoughtTime] = useState(false)
+  const [currentExercise, setcurrentExercise] = useState(0);
+  const [failedExercises, setFailedExercises] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [clockRunning, setClockRunning] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [messageModal, setMessageModal] = useState("");
+  const MAX_FAILED_EXERCISES = route.params.isExam ? 4 : 2;
+  const [points, setPoints] = useState(0);
+  const [failedLesson, setfailedLesson] = useState(false);
+  const [participationID, setParticipationsID] = useState(-1);
+  const [boughtTime, setBoughtTime] = useState(false);
+  const [isShowingEarnPointsAnimation, setShowEarnPointsAnimation] =
+    useState(false);
 
   const startParticipation = async () => {
     try {
-      const participationResponse = await IdiomaPlayApi.post('/participations',
-      {
-        'userId': 1,
-        'unitId': route.params.unitId,
-        'lessonId': route.params.isExam? undefined : route.params.lessonId,
-        'examId': route.params.isExam? 1 : undefined,
-        'correctExercises': 0,
-      }
+      const participationResponse = await IdiomaPlayApi.post(
+        "/participations",
+        {
+          userId: 1,
+          unitId: route.params.unitId,
+          lessonId: route.params.isExam ? undefined : route.params.lessonId,
+          examId: route.params.isExam ? 1 : undefined,
+          correctExercises: 0,
+        }
       );
 
-      setParticipationsID(participationResponse.data.id)
+      setParticipationsID(participationResponse.data.id);
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const getExercises = async () => {
     try {
@@ -65,7 +66,7 @@ export const ExercisesScreen = ({route}:any) => {
       );
       const exercises = await respondLessons.json();
       //console.log(exercises)
-      setExercises(exercises.exercises)
+      setExercises(exercises.exercises);
     } catch (error) {
       // setError(true);
       console.error(error);
@@ -74,13 +75,13 @@ export const ExercisesScreen = ({route}:any) => {
 
   const getPoints = async () => {
     try {
-      const response = await IdiomaPlayApi.get('/users/'+1);
-      const points = response.data.points
-      setPoints(points)
-    } catch (error) { 
-      console.error(error)
+      const response = await IdiomaPlayApi.get("/users/" + 1);
+      const points = response.data.points;
+      setPoints(points);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
   const getExam = async () => {
     try {
@@ -88,10 +89,10 @@ export const ExercisesScreen = ({route}:any) => {
         "https://tp-tdp2.herokuapp.com/exams/" + route.params.examId
       );
       const exercises = await respondLessons.json();
-      console.log(exercises)
-      setExercises(exercises.exercises)
+      console.log(exercises);
+      setExercises(exercises.exercises);
       // setDuration(exercises.examTimeInSeconds)
-      setDuration(5)
+      setDuration(5);
     } catch (error) {
       // setError(true);
       console.error(error);
@@ -101,89 +102,93 @@ export const ExercisesScreen = ({route}:any) => {
   const buyTime = async (time: number, requiredPoints: number) => {
     if (points < requiredPoints) return false;
     try {
-      const resp = await IdiomaPlayApi.patch('/users/'+'1',
-        {
-          "points": points - requiredPoints
-        }
-      )
-      getPoints()
+      const resp = await IdiomaPlayApi.patch("/users/" + "1", {
+        points: points - requiredPoints,
+      });
+      getPoints();
       // setPoints(points - requiredPoints)
-      setDuration(time)
-      setBoughtTime(true)
+      setDuration(time);
+      setBoughtTime(true);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const failExercise = () => {
-    finishExercise(true)
-    setFailedExercises(failedExercises + 1)
-  }
-
+    finishExercise(true);
+    setFailedExercises(failedExercises + 1);
+  };
 
   const finishExercise = async (failed?: boolean, isRetry?: boolean) => {
-    if(failedExercises >= MAX_FAILED_EXERCISES && failed){
+    if (failedExercises >= MAX_FAILED_EXERCISES && failed) {
       // Failed lesson
-      setfailedLesson(true)
+      setfailedLesson(true);
       if (route.params.isExam) {
-        setMessageModal("No has logrado completar correctamente el examen, vuelve a intentarlo!")
+        setMessageModal(
+          "No has logrado completar correctamente el examen, vuelve a intentarlo!"
+        );
       } else {
-        setMessageModal("No has logrado completar correctamente la lección, vuelve a intentarlo!")
+        setMessageModal(
+          "No has logrado completar correctamente la lección, vuelve a intentarlo!"
+        );
       }
-      setShowModal(true)
-    }else {
+      setShowModal(true);
+    } else {
       if (!route.params.isExam && !failed) {
-        const resp = await IdiomaPlayApi.patch('/participations/'+ participationID,
-        {
-          'userId': 1,
-          'unitId': route.params.unitId,
-          'lessonId': route.params.lessonId,
-          'examId': undefined,
-          'correctExercises': currentExercise + 1 - failedExercises,
-          "isRetry": isRetry
-        })
-        await getPoints()
+        const resp = await IdiomaPlayApi.patch(
+          "/participations/" + participationID,
+          {
+            userId: 1,
+            unitId: route.params.unitId,
+            lessonId: route.params.lessonId,
+            examId: undefined,
+            correctExercises: currentExercise + 1 - failedExercises,
+            isRetry: isRetry,
+          }
+        );
+        setShowEarnPointsAnimation(true);
+        await getPoints();
       }
       //TODO PATCH PARTICIPATION. CAMBIAR TODO
-      if(currentExercise < exercises.length - 1){
-        setcurrentExercise(currentExercise + 1)
-      }
-      else{
-        if (route.params.isExam){
-          const resp = await IdiomaPlayApi.post('/participations',
-          {
-            'userId': 1,
-            'unitId': route.params.unitId,
-            'lessonId': undefined,
-            'examId': route.params.examId,
-            'correctExercises': currentExercise + 1 - failedExercises
-          })
-          setMessageModal("Felicitaciones! Has completado el examen correctamente")
+      if (currentExercise < exercises.length - 1) {
+        setcurrentExercise(currentExercise + 1);
+      } else {
+        if (route.params.isExam) {
+          const resp = await IdiomaPlayApi.post("/participations", {
+            userId: 1,
+            unitId: route.params.unitId,
+            lessonId: undefined,
+            examId: route.params.examId,
+            correctExercises: currentExercise + 1 - failedExercises,
+          });
+          setMessageModal(
+            "Felicitaciones! Has completado el examen correctamente"
+          );
         } else {
-          setMessageModal("Felicitaciones! Has completado la lección correctamente")
+          setMessageModal(
+            "Felicitaciones! Has completado la lección correctamente"
+          );
         }
-        setShowModal(true)
-
+        setShowModal(true);
       }
     }
-    
-  }
+  };
 
   useEffect(() => {
-    console.log("PRIMER USE EFFECT")
-    if (route.params.isExam){
+    console.log("PRIMER USE EFFECT");
+    if (route.params.isExam) {
       getExam();
     } else {
       startParticipation();
       getExercises();
     }
-    getPoints()
+    getPoints();
   }, []);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('blur', () => {
-      console.log("SEGUNDO")
-      setClockRunning(false)
+    const unsubscribe = navigation.addListener("blur", () => {
+      console.log("SEGUNDO");
+      setClockRunning(false);
     });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
@@ -197,37 +202,42 @@ export const ExercisesScreen = ({route}:any) => {
       currentExercise={currentExercise + 1}
       maxExercises={exercises.length}
       unitId={route.params.unitId}
+      isShowingEarnPointsAnimation={isShowingEarnPointsAnimation}
+      setShowEarnPointsAnimation={setShowEarnPointsAnimation}
       // lives={0}
       // currentExercise={0}
       // maxExercises={0}
     >
-      {duration !== 0 && route.params.isExam && <CountDown
-        until={duration}
-        onFinish={() => {
-          setDuration(0)
-          setMessageModal("Te has quedado sin tiempo");
-          setShowModal(true);
-        }}
-        timeToShow={['M', 'S']}
-        digitStyle={{backgroundColor: 'transparent'}}
-        timeLabels={{m: '', s: ''}}
-        separatorStyle={{color: colors.darkPrimary, fontSize:20}}
-        showSeparator={true}
-        digitTxtStyle={{color: colors.darkPrimary, fontSize:25}}
-        running={clockRunning}
-        size={20}
-      />}
+      {duration !== 0 && route.params.isExam && (
+        <CountDown
+          until={duration}
+          onFinish={() => {
+            setDuration(0);
+            setMessageModal("Te has quedado sin tiempo");
+            setShowModal(true);
+          }}
+          timeToShow={["M", "S"]}
+          digitStyle={{ backgroundColor: "transparent" }}
+          timeLabels={{ m: "", s: "" }}
+          separatorStyle={{ color: colors.darkPrimary, fontSize: 20 }}
+          showSeparator={true}
+          digitTxtStyle={{ color: colors.darkPrimary, fontSize: 25 }}
+          running={clockRunning}
+          size={20}
+        />
+      )}
       <View style={homeStyles.container}>
-        {exercises.length > 0 && 
-          <CustomExercise 
-            exercise={exercises[currentExercise]} 
+        {exercises.length > 0 && (
+          <CustomExercise
+            exercise={exercises[currentExercise]}
             finishExercise={finishExercise}
             failExercise={failExercise}
             isExam={route.params.isExam}
-          />}
+          />
+        )}
       </View>
-      <View style={homeStyles.spacer}/>
-      
+      <View style={homeStyles.spacer} />
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -235,55 +245,105 @@ export const ExercisesScreen = ({route}:any) => {
         // onRequestClose={() => {
         //   navigation.navigate(Screens.home)
         // }}
+      >
+        <View
+          style={{
+            backgroundColor: "rgba(0,0,0,0.6)",
+            justifyContent: "center",
+            flex: 1,
+            alignItems: "center",
+          }}
         >
-        <View style={{backgroundColor:'rgba(0,0,0,0.6)',justifyContent:'center',flex:1,alignItems:'center'}}>
-          <View style={[{
-            backgroundColor:'white',
-            height:Dimensions.get('window').height * 0.55,
-            width:Dimensions.get('window').width * 0.8,
-            alignItems:'center',
-            justifyContent:'space-evenly',
-            paddingHorizontal:20,
-            paddingVertical:30},
-            homeStyles.card]}>  
-            {failedLesson
-              ? <Icon name='sad-outline' size={90} color={colors.wrong}/>
-              : <Icon name='happy-outline' size={90} color={colors.correct}/>
-            }
-            
-            <Text style={{fontSize:23, color:colors.darkPrimary, textAlign:'center'}}>{messageModal}</Text>
+          <View
+            style={[
+              {
+                backgroundColor: "white",
+                height: Dimensions.get("window").height * 0.55,
+                width: Dimensions.get("window").width * 0.8,
+                alignItems: "center",
+                justifyContent: "space-evenly",
+                paddingHorizontal: 20,
+                paddingVertical: 30,
+              },
+              homeStyles.card,
+            ]}
+          >
+            {failedLesson ? (
+              <Icon name="sad-outline" size={90} color={colors.wrong} />
+            ) : (
+              <Icon name="happy-outline" size={90} color={colors.correct} />
+            )}
 
-            {route.params.isExam && !boughtTime && duration === 0 && <TouchableOpacity
-              style={[{ backgroundColor: colors.primary, width:'80%',height:50,justifyContent:'center',alignItems:'center' },homeStyles.card]}
-              onPress={async () =>{
-                await buyTime(30,50)
-                setShowModal(false)
-              }}>
-              <Text style={{fontSize:20, fontWeight:'bold', color: 'white'}}>Comprar tiempo</Text>
-            </TouchableOpacity>}
-            
+            <Text
+              style={{
+                fontSize: 23,
+                color: colors.darkPrimary,
+                textAlign: "center",
+              }}
+            >
+              {messageModal}
+            </Text>
+
+            {route.params.isExam && !boughtTime && duration === 0 && (
+              <TouchableOpacity
+                style={[
+                  {
+                    backgroundColor: colors.primary,
+                    width: "80%",
+                    height: 50,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  },
+                  homeStyles.card,
+                ]}
+                onPress={async () => {
+                  await buyTime(30, 50);
+                  setShowModal(false);
+                }}
+              >
+                <Text
+                  style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+                >
+                  Comprar tiempo
+                </Text>
+              </TouchableOpacity>
+            )}
+
             <TouchableOpacity
-              style={[{ backgroundColor: colors.primary, width:'80%',height:50,justifyContent:'center',alignItems:'center' },homeStyles.card]}
+              style={[
+                {
+                  backgroundColor: colors.primary,
+                  width: "80%",
+                  height: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
+                },
+                homeStyles.card,
+              ]}
               onPress={() => {
-                navigation.navigate(Screens.lessons, {unitId: route.params.unitId})
-                setShowModal(false)
-              }}>
-              <Text style={{fontSize:20, fontWeight:'bold', color: 'white'}}>Volver a la unidad</Text>
+                navigation.navigate(Screens.lessons, {
+                  unitId: route.params.unitId,
+                });
+                setShowModal(false);
+              }}
+            >
+              <Text
+                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+              >
+                Volver a la unidad
+              </Text>
             </TouchableOpacity>
-
           </View>
-
         </View>
       </Modal>
-      
     </CustomExerciseHeader>
-  )
-}
+  );
+};
 
 const homeStyles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20
+    marginTop: 20,
   },
   card: {
     borderRadius: 10,
@@ -298,9 +358,9 @@ const homeStyles = StyleSheet.create({
     elevation: 9,
   },
   cardTitle: {
-    fontSize: 20
+    fontSize: 20,
   },
   spacer: {
-    height: 100
-  }
-})
+    height: 100,
+  },
+});
