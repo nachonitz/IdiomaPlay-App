@@ -123,6 +123,13 @@ export const LessonsScreen = ({ route }: any) => {
               </Card>
             </TouchableOpacity>
           ))}
+        <View
+          style={{
+            width: "100%",
+            height: 1,
+            backgroundColor: "lightgrey",
+          }}
+        />
         {lessons.length > 0 && completedLessons.length > 0 && (
           <TouchableOpacity
             onPress={() => {
@@ -154,7 +161,79 @@ export const LessonsScreen = ({ route }: any) => {
                 },
               ]}
             >
-              <Text style={homeStyles.cardTitle}>Test</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  // Fix harcoded width
+                  width: 300,
+                }}
+              >
+                <Text style={{ ...homeStyles.cardTitle, color: "white" }}>
+                  Exam
+                </Text>
+                {!completedExam &&
+                  !(
+                    completedLessons.findIndex(
+                      (element) => element.value === false
+                    ) !== -1
+                  ) && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Icon name="ellipse" size={25} color={"lightgrey"} />
+                      <Icon name="ellipse" size={25} color={"lightgrey"} />
+                      <Icon name="ellipse" size={25} color={"lightgrey"} />
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-around",
+                          position: "absolute",
+                          width: "100%",
+                        }}
+                      >
+                        <Icon
+                          name="ellipse"
+                          size={19}
+                          color={colors.darkPrimary}
+                        />
+                        <Icon
+                          name="ellipse"
+                          size={19}
+                          color={colors.darkPrimary}
+                        />
+                        <Icon
+                          name="ellipse"
+                          size={19}
+                          color={colors.darkPrimary}
+                        />
+                      </View>
+                    </View>
+                  )}
+              </View>
+              <View
+                style={{
+                  marginTop: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {!completedExam &&
+                  !(
+                    completedLessons.findIndex(
+                      (element) => element.value === false
+                    ) !== -1
+                  ) && (
+                    <Text style={{ color: "white", fontStyle: "italic" }}>
+                      ¡3 oportunidades restantes!
+                    </Text>
+                  )}
+              </View>
             </Card>
           </TouchableOpacity>
         )}
