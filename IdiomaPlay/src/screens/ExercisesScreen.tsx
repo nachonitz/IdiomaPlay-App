@@ -48,7 +48,7 @@ export const ExercisesScreen = ({ route }: any) => {
           userId: 1,
           unitId: route.params.unitId,
           lessonId: route.params.isExam ? undefined : route.params.lessonId,
-          examId: route.params.isExam ? 1 : undefined,
+          examId: route.params.isExam ? route.params.examId : undefined,
           correctExercises: 0,
         }
       );
@@ -91,8 +91,7 @@ export const ExercisesScreen = ({ route }: any) => {
       const exercises = await respondLessons.json();
       console.log(exercises);
       setExercises(exercises.exercises);
-      // setDuration(exercises.examTimeInSeconds)
-      setDuration(5);
+      setDuration(exercises.examTimeInSeconds);
     } catch (error) {
       // setError(true);
       console.error(error);
@@ -124,6 +123,7 @@ export const ExercisesScreen = ({ route }: any) => {
       // Failed lesson
       setfailedLesson(true);
       if (route.params.isExam) {
+        startParticipation();
         setMessageModal(
           "No has logrado completar correctamente el examen, vuelve a intentarlo!"
         );
@@ -135,6 +135,7 @@ export const ExercisesScreen = ({ route }: any) => {
       setShowModal(true);
     } else {
       if (!route.params.isExam && !failed) {
+        setShowEarnPointsAnimation(true);
         const resp = await IdiomaPlayApi.patch(
           "/participations/" + participationID,
           {
@@ -146,7 +147,6 @@ export const ExercisesScreen = ({ route }: any) => {
             isRetry: isRetry,
           }
         );
-        setShowEarnPointsAnimation(true);
         await getPoints();
       }
       //TODO PATCH PARTICIPATION. CAMBIAR TODO
@@ -321,6 +321,9 @@ export const ExercisesScreen = ({ route }: any) => {
                 homeStyles.card,
               ]}
               onPress={() => {
+                if (duration === 0 && route.params.isExam) {
+                  startParticipation();
+                }
                 navigation.navigate(Screens.lessons, {
                   unitId: route.params.unitId,
                 });
