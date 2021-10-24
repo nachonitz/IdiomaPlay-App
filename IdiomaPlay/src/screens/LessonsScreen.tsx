@@ -106,6 +106,14 @@ export const LessonsScreen = ({ route }: any) => {
     getExamOpportunities();
   }, []);
 
+  useEffect(() => {
+    const subscribe = navigation.addListener("focus", () => {
+      getLessons();
+      getExamOpportunities();
+    });
+    return subscribe;
+  }, [navigation]);
+
   return (
     <CustomHeaderScreen logo profile>
       <View style={homeStyles.container}>
@@ -114,7 +122,7 @@ export const LessonsScreen = ({ route }: any) => {
           lessons.map((lesson: any, index) => (
             <TouchableOpacity
               onPress={() => {
-                navigation.replace(Screens.exercises, {
+                navigation.navigate(Screens.exercises, {
                   lessonId: lesson["id"],
                   unitId: route.params.unitId,
                 });
@@ -155,7 +163,7 @@ export const LessonsScreen = ({ route }: any) => {
         {lessons.length > 0 && completedLessons.length > 0 && (
           <TouchableOpacity
             onPress={() => {
-              navigation.replace(Screens.exercises, {
+              navigation.navigate(Screens.exercises, {
                 lessonId: 1,
                 examId: examId,
                 isExam: true,

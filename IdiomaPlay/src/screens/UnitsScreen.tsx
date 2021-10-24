@@ -141,6 +141,13 @@ export const UnitsScreen = () => {
     getUnits();
   }, []);
 
+  useEffect(() => {
+    const subscribe = navigation.addListener("focus", () => {
+      getUnits()
+    });
+    return subscribe;
+  }, [navigation]);
+
   return (
     <CustomHeaderScreen logo profile>
       <View style={homeStyles.container}>
