@@ -175,6 +175,7 @@ export const ExercisesScreen = ({route}:any) => {
       points={points}
       currentExercise={currentExercise + 1}
       maxExercises={exercises.length}
+      unitId={route.params.unitId}
       // lives={0}
       // currentExercise={0}
       // maxExercises={0}

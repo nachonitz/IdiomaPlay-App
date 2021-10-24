@@ -33,7 +33,7 @@ export const UnitsScreen = () => {
       const units = resp.data.items;
       for(var i = 0; i < length; i++){
         const unitId = units[i].id;
-        const dict = {"unitId":unitId, "completed":false, "numberOfLessons": await getUnitNumberOfLessons(unitId),"completedLessons": await getUnitCompletedLessons(unitId)}
+        const dict = {"unitId":unitId, "completed":await checkCompletedUnit(unitId), "numberOfLessons": await getUnitNumberOfLessons(unitId),"completedLessons": await getUnitCompletedLessons(unitId)}
         completed.push(dict)
       }
 
@@ -73,6 +73,26 @@ export const UnitsScreen = () => {
     }
   };
 
+  const checkCompletedUnit = async (unitId: number) => {
+    try {
+      const resp = await IdiomaPlayApi.get('/participations',
+        {
+          params: {
+            'limit' : 2000,
+            'unit': unitId,
+            'userId': 1
+          }
+        }
+      )
+      let exams = resp.data.items.filter(function(item:any){
+        return ((item.exam !== null) && (item.correctExercises >= config.passingAmountOfExcercisesPerExam));
+      }).length
+      return exams >= 1
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   const getUnitNumberOfLessons = async (unitId: number) => {
     try {
       const resp = await IdiomaPlayApi.get('/units/' + unitId,
@@ -93,7 +113,7 @@ export const UnitsScreen = () => {
       const resp = await IdiomaPlayApi.get('/participations',
       { 
         params: {
-          'limit': 20,
+          'limit': 2000,
           'unit': unitId,
           'userId': 1
         }
@@ -102,7 +122,7 @@ export const UnitsScreen = () => {
 
       let completedLessons = resp.data.items.filter(function(item:any){
         console.log(item)
-        return item.exam == null && item.correctExercises >= config.passingAmountOfExcercisesPerLesson;
+        return ((item.exam == null) && (item.correctExercises >= config.passingAmountOfExcercisesPerLesson));
       }).length;
       console.log(completedLessons)
       return completedLessons
@@ -128,7 +148,7 @@ export const UnitsScreen = () => {
               }
             )}}
           activeOpacity={0.8}
-          disabled={unitsInfo[index].value}
+          disabled={unitsInfo[index].completed}
           key={unit.id}
         >
           <Card containerStyle={[homeStyles.card, unitsInfo[index].value && {backgroundColor: colors.correct}]}>
