@@ -78,7 +78,6 @@ export const UnitsScreen = () => {
       const resp = await IdiomaPlayApi.get('/participations',
         {
           params: {
-            'limit' : 2000,
             'unit': unitId,
             'userId': 1
           }
@@ -113,9 +112,8 @@ export const UnitsScreen = () => {
       const resp = await IdiomaPlayApi.get('/participations',
       { 
         params: {
-          'limit': 2000,
           'unit': unitId,
-          'userId': 1
+          'user': 1
         }
       }
       )

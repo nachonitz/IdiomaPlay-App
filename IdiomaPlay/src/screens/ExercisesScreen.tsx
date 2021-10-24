@@ -30,7 +30,7 @@ export const ExercisesScreen = ({route}:any) => {
   const [exercises, setExercises] = useState([]);
   const [currentExercise, setcurrentExercise] = useState(0)
   const [failedExercises, setFailedExercises] = useState(0)
-  const [duration, setDuration] = useState()
+  const [duration, setDuration] = useState(0)
   const [clockRunning, setClockRunning] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [messageModal, setMessageModal] = useState("")
@@ -38,6 +38,7 @@ export const ExercisesScreen = ({route}:any) => {
   const [points, setPoints] = useState(0)
   const [failedLesson, setfailedLesson] = useState(false)
   const [participationID, setParticipationsID] = useState(-1)
+  const [boughtTime, setBoughtTime] = useState(false)
 
   const startParticipation = async () => {
     try {
@@ -89,12 +90,30 @@ export const ExercisesScreen = ({route}:any) => {
       const exercises = await respondLessons.json();
       console.log(exercises)
       setExercises(exercises.exercises)
-      setDuration(exercises.examTimeInSeconds)
+      // setDuration(exercises.examTimeInSeconds)
+      setDuration(5)
     } catch (error) {
       // setError(true);
       console.error(error);
     }
   };
+
+  const buyTime = async (time: number, requiredPoints: number) => {
+    if (points < requiredPoints) return false;
+    try {
+      const resp = await IdiomaPlayApi.patch('/users/'+'1',
+        {
+          "points": points - requiredPoints
+        }
+      )
+      getPoints()
+      // setPoints(points - requiredPoints)
+      setDuration(time)
+      setBoughtTime(true)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const failExercise = () => {
     finishExercise(true)
@@ -151,6 +170,7 @@ export const ExercisesScreen = ({route}:any) => {
   }
 
   useEffect(() => {
+    console.log("PRIMER USE EFFECT")
     if (route.params.isExam){
       getExam();
     } else {
@@ -162,6 +182,7 @@ export const ExercisesScreen = ({route}:any) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
+      console.log("SEGUNDO")
       setClockRunning(false)
     });
 
@@ -180,9 +201,10 @@ export const ExercisesScreen = ({route}:any) => {
       // currentExercise={0}
       // maxExercises={0}
     >
-      {duration && route.params.isExam && <CountDown
+      {duration !== 0 && route.params.isExam && <CountDown
         until={duration}
         onFinish={() => {
+          setDuration(0)
           setMessageModal("Te has quedado sin tiempo");
           setShowModal(true);
         }}
@@ -231,6 +253,15 @@ export const ExercisesScreen = ({route}:any) => {
             
             <Text style={{fontSize:23, color:colors.darkPrimary, textAlign:'center'}}>{messageModal}</Text>
 
+            {route.params.isExam && !boughtTime && duration === 0 && <TouchableOpacity
+              style={[{ backgroundColor: colors.primary, width:'80%',height:50,justifyContent:'center',alignItems:'center' },homeStyles.card]}
+              onPress={async () =>{
+                await buyTime(30,50)
+                setShowModal(false)
+              }}>
+              <Text style={{fontSize:20, fontWeight:'bold', color: 'white'}}>Comprar tiempo</Text>
+            </TouchableOpacity>}
+            
             <TouchableOpacity
               style={[{ backgroundColor: colors.primary, width:'80%',height:50,justifyContent:'center',alignItems:'center' },homeStyles.card]}
               onPress={() => {
