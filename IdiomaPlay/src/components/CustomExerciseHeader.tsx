@@ -17,11 +17,13 @@ export const CustomExerciseHeader = (
     points,
     currentExercise,
     maxExercises,
+    unitId
   }: React.PropsWithChildren<{
     lives: number,
     points: number,
     currentExercise: number,
     maxExercises : number,
+    unitId: number
   }>) => {
   
   const {top} = useSafeAreaInsets()
@@ -152,7 +154,7 @@ export const CustomExerciseHeader = (
                   <TouchableOpacity
                     style={[{ backgroundColor: colors.wrong, width:'40%',height:50,justifyContent:'center',alignItems:'center' },customScreenStyles.card]}
                     onPress={() => {
-                      navigation.navigate(Screens.units)
+                      navigation.replace(Screens.lessons, {unitId: unitId})
                       setshowModal(false)
                     }}>
                     <Text style={{fontSize:20, fontWeight:'bold', color: 'white'}}>Salir</Text>
