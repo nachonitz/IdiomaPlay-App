@@ -177,7 +177,7 @@ export const CustomExerciseHeader = ({
               style={{
                 fontSize: 17,
                 fontWeight: "700",
-                color: "blue",
+                color: colors.lightPrimary,
                 marginRight: 15,
               }}
             >

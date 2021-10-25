@@ -136,7 +136,7 @@ export const ExercisesScreen = ({ route }: any) => {
       setShowModal(true);
     } else {
       if (!route.params.isExam && !failed) {
-        setShowEarnPointsAnimation(true);
+        if (!isRetry) setShowEarnPointsAnimation(true);
         const resp = await IdiomaPlayApi.patch(
           "/participations/" + participationID,
           {
@@ -150,7 +150,6 @@ export const ExercisesScreen = ({ route }: any) => {
         );
         await getPoints();
       }
-      //TODO PATCH PARTICIPATION. CAMBIAR TODO
       if (currentExercise < exercises.length - 1) {
         setcurrentExercise(currentExercise + 1);
       } else {
