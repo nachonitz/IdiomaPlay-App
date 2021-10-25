@@ -15,6 +15,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import IdiomaPlayApi from "../api/IdiomaPlayApi";
 import { CustomExercise } from "../components/CustomExercise";
 import { CustomExerciseHeader } from "../components/CustomExerciseHeader";
+import { CustomSnackBar } from "../components/CustomSnackBar";
 import { Screens } from "../navigator/Screens";
 import { colors } from "../theme/colors";
 
@@ -42,6 +43,9 @@ export const ExercisesScreen = ({ route }: any) => {
   const [isShowingEarnPointsAnimation, setShowEarnPointsAnimation] =
     useState(false);
   const [showModalRetryUnit, setShowModalRetryUnit] = useState(false);
+  const [showMessage, setshowMessage] = useState(false);
+  const [messageText, setmessageText] = useState("");
+  const [failedOption, setfailedOption] = useState(false);
 
   const startParticipation = async () => {
     try {
@@ -175,6 +179,16 @@ export const ExercisesScreen = ({ route }: any) => {
     }
   };
 
+  const showExerciseFeedback = (message: string, failed: boolean) => {
+    setmessageText(message);
+    setfailedOption(failed);
+    setshowMessage(true);
+
+    setTimeout(() => {
+      setshowMessage(false);
+    }, 1500);
+  };
+
   useEffect(() => {
     if (route.params.isExam) {
       getExam();
@@ -195,176 +209,104 @@ export const ExercisesScreen = ({ route }: any) => {
   }, [navigation]);
 
   return (
-    <CustomExerciseHeader
-      lives={MAX_FAILED_EXERCISES - failedExercises + 1}
-      points={points}
-      currentExercise={currentExercise + 1}
-      maxExercises={exercises.length}
-      unitId={route.params.unitId}
-      isShowingEarnPointsAnimation={isShowingEarnPointsAnimation}
-      setShowEarnPointsAnimation={setShowEarnPointsAnimation}
-      // lives={0}
-      // currentExercise={0}
-      // maxExercises={0}
-    >
-      {duration !== 0 && route.params.isExam && (
-        <CountDown
-          until={duration}
-          onFinish={() => {
-            setDuration(0);
-            setMessageModal("Te has quedado sin tiempo");
-            setShowModal(true);
-          }}
-          timeToShow={["M", "S"]}
-          digitStyle={{ backgroundColor: "transparent" }}
-          timeLabels={{ m: "", s: "" }}
-          separatorStyle={{ color: colors.darkPrimary, fontSize: 20 }}
-          showSeparator={true}
-          digitTxtStyle={{ color: colors.darkPrimary, fontSize: 25 }}
-          running={clockRunning}
-          size={20}
-        />
-      )}
-      <View style={homeStyles.container}>
-        {exercises.length > 0 && (
-          <CustomExercise
-            exercise={exercises[currentExercise]}
-            finishExercise={finishExercise}
-            failExercise={failExercise}
-            isExam={route.params.isExam}
+    <>
+      <CustomSnackBar
+        visible={showMessage}
+        message={messageText}
+        error={failedOption}
+      />
+      <CustomExerciseHeader
+        lives={MAX_FAILED_EXERCISES - failedExercises + 1}
+        points={points}
+        currentExercise={currentExercise + 1}
+        maxExercises={exercises.length}
+        unitId={route.params.unitId}
+        isShowingEarnPointsAnimation={isShowingEarnPointsAnimation}
+        setShowEarnPointsAnimation={setShowEarnPointsAnimation}
+        // lives={0}
+        // currentExercise={0}
+        // maxExercises={0}
+      >
+        {duration !== 0 && route.params.isExam && (
+          <CountDown
+            until={duration}
+            onFinish={() => {
+              setDuration(0);
+              setMessageModal("Te has quedado sin tiempo");
+              setShowModal(true);
+            }}
+            timeToShow={["M", "S"]}
+            digitStyle={{ backgroundColor: "transparent" }}
+            timeLabels={{ m: "", s: "" }}
+            separatorStyle={{ color: colors.darkPrimary, fontSize: 20 }}
+            showSeparator={true}
+            digitTxtStyle={{ color: colors.darkPrimary, fontSize: 25 }}
+            running={clockRunning}
+            size={20}
           />
         )}
-      </View>
-      <View style={homeStyles.spacer} />
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showModalRetryUnit}
-        // onRequestClose={() => {
-        //   navigation.navigate(Screens.home)
-        // }}
-      >
-        <View
-          style={{
-            backgroundColor: "rgba(0,0,0,0.6)",
-            justifyContent: "center",
-            flex: 1,
-            alignItems: "center",
-          }}
+        <View style={homeStyles.container}>
+          {exercises.length > 0 && (
+            <CustomExercise
+              exercise={exercises[currentExercise]}
+              finishExercise={finishExercise}
+              showExerciseFeedback={showExerciseFeedback}
+              failExercise={failExercise}
+              isExam={route.params.isExam}
+            />
+          )}
+        </View>
+        <View style={homeStyles.spacer} />
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModalRetryUnit}
+          // onRequestClose={() => {
+          //   navigation.navigate(Screens.home)
+          // }}
         >
           <View
-            style={[
-              {
-                backgroundColor: "white",
-                height: Dimensions.get("window").height * 0.55,
-                width: Dimensions.get("window").width * 0.8,
-                alignItems: "center",
-                justifyContent: "space-evenly",
-                paddingHorizontal: 20,
-                paddingVertical: 30,
-                borderWidth: 4,
-                borderColor: colors.wrong,
-              },
-              homeStyles.card,
-            ]}
+            style={{
+              backgroundColor: "rgba(0,0,0,0.6)",
+              justifyContent: "center",
+              flex: 1,
+              alignItems: "center",
+            }}
           >
-            <Icon name="sad-outline" size={90} color={colors.wrong} />
-
-            <Text
-              style={{
-                fontSize: 23,
-                color: colors.darkPrimary,
-                textAlign: "center",
-              }}
-            >
-              Has fallado 3 veces el examen, tendrás que realizar la unidad
-              nuevamente
-            </Text>
-            <TouchableOpacity
+            <View
               style={[
                 {
-                  backgroundColor: colors.primary,
-                  width: "80%",
-                  height: 50,
-                  justifyContent: "center",
+                  backgroundColor: "white",
+                  height: Dimensions.get("window").height * 0.55,
+                  width: Dimensions.get("window").width * 0.8,
                   alignItems: "center",
+                  justifyContent: "space-evenly",
+                  paddingHorizontal: 20,
+                  paddingVertical: 30,
+                  borderWidth: 4,
+                  borderColor: colors.wrong,
                 },
                 homeStyles.card,
               ]}
-              onPress={() => {
-                navigation.navigate(Screens.lessons, {
-                  unitId: route.params.unitId,
-                });
-                setShowModalRetryUnit(false);
-              }}
             >
-              <Text
-                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
-              >
-                Volver a la unidad
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showModal}
-        // onRequestClose={() => {
-        //   navigation.navigate(Screens.home)
-        // }}
-      >
-        <View
-          style={{
-            backgroundColor: "rgba(0,0,0,0.6)",
-            justifyContent: "center",
-            flex: 1,
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={[
-              {
-                backgroundColor: "white",
-                height: Dimensions.get("window").height * 0.55,
-                width: Dimensions.get("window").width * 0.8,
-                alignItems: "center",
-                justifyContent: "space-evenly",
-                paddingHorizontal: 20,
-                paddingVertical: 30,
-                borderWidth: 4,
-                borderColor:
-                  failedLesson || (duration === 0 && route.params.isExam)
-                    ? colors.wrong
-                    : colors.correct,
-              },
-              homeStyles.card,
-            ]}
-          >
-            {failedLesson || (duration === 0 && route.params.isExam) ? (
               <Icon name="sad-outline" size={90} color={colors.wrong} />
-            ) : (
-              <Icon name="happy-outline" size={90} color={colors.correct} />
-            )}
 
-            <Text
-              style={{
-                fontSize: 23,
-                color: colors.darkPrimary,
-                textAlign: "center",
-              }}
-            >
-              {messageModal}
-            </Text>
-
-            {route.params.isExam && !boughtTime && duration === 0 && (
+              <Text
+                style={{
+                  fontSize: 23,
+                  color: colors.darkPrimary,
+                  textAlign: "center",
+                }}
+              >
+                Has fallado 3 veces el examen, tendrás que realizar la unidad
+                nuevamente
+              </Text>
               <TouchableOpacity
                 style={[
                   {
-                    backgroundColor: colors.lightPrimary,
+                    backgroundColor: colors.primary,
                     width: "80%",
                     height: 50,
                     justifyContent: "center",
@@ -373,284 +315,373 @@ export const ExercisesScreen = ({ route }: any) => {
                   homeStyles.card,
                 ]}
                 onPress={() => {
-                  setShowModal(false);
-                  setShowModalStore(true);
+                  navigation.navigate(Screens.lessons, {
+                    unitId: route.params.unitId,
+                  });
+                  setShowModalRetryUnit(false);
                 }}
               >
                 <Text
                   style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
                 >
-                  Comprar tiempo
+                  Volver a la unidad
                 </Text>
               </TouchableOpacity>
-            )}
-
-            <TouchableOpacity
-              style={[
-                {
-                  backgroundColor: colors.primary,
-                  width:
-                    route.params.isExam && !failedLesson && duration !== 0
-                      ? "90%"
-                      : "80%",
-                  height: 50,
-                  justifyContent: "center",
-                  alignItems: "center",
-                },
-                homeStyles.card,
-              ]}
-              onPress={() => {
-                if (duration === 0 && route.params.isExam) {
-                  startParticipation();
-                }
-                if (
-                  route.params.isExam &&
-                  (failedLesson || duration === 0) &&
-                  route.params.examOpportunities === 1
-                ) {
-                  setShowModal(false);
-                  setShowModalRetryUnit(true);
-                } else {
-                  if (route.params.isExam && !failedLesson && duration !== 0) {
-                    navigation.navigate(Screens.units);
-                  } else {
-                    navigation.navigate(Screens.lessons, {
-                      unitId: route.params.unitId,
-                    });
-                  }
-                  setShowModal(false);
-                }
-              }}
-            >
-              <Text
-                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
-              >
-                Volver a{" "}
-                {route.params.isExam && !failedLesson && duration !== 0
-                  ? "las unidades"
-                  : "la unidad"}
-              </Text>
-            </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showModalStore}
-        // onRequestClose={() => {
-        //   navigation.navigate(Screens.home)
-        // }}
-      >
-        <View
-          style={{
-            backgroundColor: "rgba(0,0,0,0.6)",
-            justifyContent: "center",
-            flex: 1,
-            alignItems: "center",
-          }}
+        </Modal>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModal}
+          // onRequestClose={() => {
+          //   navigation.navigate(Screens.home)
+          // }}
         >
           <View
-            style={[
-              {
-                backgroundColor: "white",
-                height: Dimensions.get("window").height * 0.55,
-                width: Dimensions.get("window").width * 0.8,
-                alignItems: "center",
-                justifyContent: "space-around",
-                paddingHorizontal: 20,
-                paddingVertical: 30,
-                borderWidth: 4,
-                borderColor: colors.lightPrimary,
-              },
-              homeStyles.card,
-            ]}
+            style={{
+              backgroundColor: "rgba(0,0,0,0.6)",
+              justifyContent: "center",
+              flex: 1,
+              alignItems: "center",
+            }}
           >
-            <TouchableOpacity
-              onPress={() => {
-                setShowModalStore(false);
-                setShowModal(true);
-              }}
-              activeOpacity={0.6}
-              style={{ position: "absolute", top: 10, right: 10 }}
-            >
-              <Icon name="close-circle-outline" size={33} color={"lightgrey"} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                fontSize: 22,
-                fontWeight: "bold",
-                color: colors.darkPrimary,
-                marginBottom: 20,
-              }}
-            >
-              Tienda
-            </Text>
-
-            <TouchableOpacity
+            <View
               style={[
                 {
-                  backgroundColor: colors.lightPrimary,
-                  width: "100%",
-                  height: 60,
-                  justifyContent: "space-between",
+                  backgroundColor: "white",
+                  height: Dimensions.get("window").height * 0.55,
+                  width: Dimensions.get("window").width * 0.8,
                   alignItems: "center",
-                  flexDirection: "row",
-                  paddingHorizontal: 12,
+                  justifyContent: "space-evenly",
+                  paddingHorizontal: 20,
+                  paddingVertical: 30,
+                  borderWidth: 4,
+                  borderColor:
+                    failedLesson || (duration === 0 && route.params.isExam)
+                      ? colors.wrong
+                      : colors.correct,
                 },
                 homeStyles.card,
               ]}
-              onPress={async () => {
-                await buyTime(30, 10);
-                setShowModalStore(false);
-              }}
             >
+              {failedLesson || (duration === 0 && route.params.isExam) ? (
+                <Icon name="sad-outline" size={90} color={colors.wrong} />
+              ) : (
+                <Icon name="happy-outline" size={90} color={colors.correct} />
+              )}
+
               <Text
-                style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
-              >
-                30 segundos extra
-              </Text>
-              <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
+                  fontSize: 23,
+                  color: colors.darkPrimary,
+                  textAlign: "center",
+                }}
+              >
+                {messageModal}
+              </Text>
+
+              {route.params.isExam && !boughtTime && duration === 0 && (
+                <TouchableOpacity
+                  style={[
+                    {
+                      backgroundColor: colors.lightPrimary,
+                      width: "80%",
+                      height: 50,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    },
+                    homeStyles.card,
+                  ]}
+                  onPress={() => {
+                    setShowModal(false);
+                    setShowModalStore(true);
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+                  >
+                    Comprar tiempo
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity
+                style={[
+                  {
+                    backgroundColor: colors.primary,
+                    width:
+                      route.params.isExam && !failedLesson && duration !== 0
+                        ? "90%"
+                        : "80%",
+                    height: 50,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  },
+                  homeStyles.card,
+                ]}
+                onPress={() => {
+                  if (duration === 0 && route.params.isExam) {
+                    startParticipation();
+                  }
+                  if (
+                    route.params.isExam &&
+                    (failedLesson || duration === 0) &&
+                    route.params.examOpportunities === 1
+                  ) {
+                    setShowModal(false);
+                    setShowModalRetryUnit(true);
+                  } else {
+                    if (
+                      route.params.isExam &&
+                      !failedLesson &&
+                      duration !== 0
+                    ) {
+                      navigation.navigate(Screens.units);
+                    } else {
+                      navigation.navigate(Screens.lessons, {
+                        unitId: route.params.unitId,
+                      });
+                    }
+                    setShowModal(false);
+                  }
+                }}
+              >
+                <Text
+                  style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+                >
+                  Volver a{" "}
+                  {route.params.isExam && !failedLesson && duration !== 0
+                    ? "las unidades"
+                    : "la unidad"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModalStore}
+          // onRequestClose={() => {
+          //   navigation.navigate(Screens.home)
+          // }}
+        >
+          <View
+            style={{
+              backgroundColor: "rgba(0,0,0,0.6)",
+              justifyContent: "center",
+              flex: 1,
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={[
+                {
+                  backgroundColor: "white",
+                  height: Dimensions.get("window").height * 0.55,
+                  width: Dimensions.get("window").width * 0.8,
                   alignItems: "center",
+                  justifyContent: "space-around",
+                  paddingHorizontal: 20,
+                  paddingVertical: 30,
+                  borderWidth: 4,
+                  borderColor: colors.lightPrimary,
+                },
+                homeStyles.card,
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  setShowModalStore(false);
+                  setShowModal(true);
+                }}
+                activeOpacity={0.6}
+                style={{ position: "absolute", top: 10, right: 10 }}
+              >
+                <Icon
+                  name="close-circle-outline"
+                  size={33}
+                  color={"lightgrey"}
+                />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 22,
+                  fontWeight: "bold",
+                  color: colors.darkPrimary,
+                  marginBottom: 20,
+                }}
+              >
+                Tienda
+              </Text>
+
+              <TouchableOpacity
+                style={[
+                  {
+                    backgroundColor: colors.lightPrimary,
+                    width: "100%",
+                    height: 60,
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    paddingHorizontal: 12,
+                  },
+                  homeStyles.card,
+                ]}
+                onPress={async () => {
+                  await buyTime(30, 10);
+                  setShowModalStore(false);
                 }}
               >
                 <Text
                   style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
                 >
-                  200
+                  30 segundos extra
                 </Text>
-                <Image
-                  source={require("../assets/token.png")}
-                  style={{ height: 22, width: 22, marginLeft: 5 }}
-                />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                {
-                  backgroundColor: colors.lightPrimary,
-                  width: "100%",
-                  height: 60,
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  flexDirection: "row",
-                  paddingHorizontal: 12,
-                },
-                homeStyles.card,
-              ]}
-              onPress={async () => {
-                await buyTime(60, 20);
-                setShowModalStore(false);
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  color: "white",
-                  marginLeft: 20,
-                }}
-              >
-                1 minuto extra
-              </Text>
-              <Text
-                style={{
-                  fontSize: 19,
-                  fontWeight: "bold",
-                  color: colors.correct,
-                  transform: [{ rotate: "-40deg" }],
-                  position: "absolute",
-                  left: -2,
-                  top: 7,
-                }}
-              >
-                -25%
-              </Text>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                  >
+                    200
+                  </Text>
+                  <Image
+                    source={require("../assets/token.png")}
+                    style={{ height: 22, width: 22, marginLeft: 5 }}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  {
+                    backgroundColor: colors.lightPrimary,
+                    width: "100%",
+                    height: 60,
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    paddingHorizontal: 12,
+                  },
+                  homeStyles.card,
+                ]}
+                onPress={async () => {
+                  await buyTime(60, 20);
+                  setShowModalStore(false);
                 }}
               >
                 <Text
                   style={{
                     fontSize: 18,
                     fontWeight: "bold",
-                    color: colors.correct,
+                    color: "white",
+                    marginLeft: 20,
                   }}
                 >
-                  300
+                  1 minuto extra
                 </Text>
                 <Text
                   style={{
-                    fontSize: 15,
+                    fontSize: 19,
                     fontWeight: "bold",
-                    color: "lightgrey",
+                    color: colors.correct,
+                    transform: [{ rotate: "-40deg" }],
                     position: "absolute",
-                    top: -15,
-                    left: 4,
-                    textDecorationLine: "line-through",
-                    textDecorationStyle: "solid",
+                    left: -2,
+                    top: 7,
                   }}
                 >
-                  400
+                  -25%
                 </Text>
-                <Image
-                  source={require("../assets/token.png")}
-                  style={{ height: 22, width: 22, marginLeft: 5 }}
-                />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                {
-                  backgroundColor: colors.lightPrimary,
-                  width: "100%",
-                  height: 60,
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  flexDirection: "row",
-                  paddingHorizontal: 12,
-                },
-                homeStyles.card,
-              ]}
-              onPress={async () => {
-                await buyTime(180, 30);
-                setShowModalStore(false);
-              }}
-            >
-              <Text
-                style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
-              >
-                3 minutos extra
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: "bold",
+                      color: colors.correct,
+                    }}
+                  >
+                    300
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      fontWeight: "bold",
+                      color: "lightgrey",
+                      position: "absolute",
+                      top: -15,
+                      left: 4,
+                      textDecorationLine: "line-through",
+                      textDecorationStyle: "solid",
+                    }}
+                  >
+                    400
+                  </Text>
+                  <Image
+                    source={require("../assets/token.png")}
+                    style={{ height: 22, width: 22, marginLeft: 5 }}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  {
+                    backgroundColor: colors.lightPrimary,
+                    width: "100%",
+                    height: 60,
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    paddingHorizontal: 12,
+                  },
+                  homeStyles.card,
+                ]}
+                onPress={async () => {
+                  await buyTime(180, 30);
+                  setShowModalStore(false);
                 }}
               >
                 <Text
                   style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
                 >
-                  450
+                  3 minutos extra
                 </Text>
-                <Image
-                  source={require("../assets/token.png")}
-                  style={{ height: 22, width: 22, marginLeft: 5 }}
-                />
-              </View>
-            </TouchableOpacity>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                  >
+                    450
+                  </Text>
+                  <Image
+                    source={require("../assets/token.png")}
+                    style={{ height: 22, width: 22, marginLeft: 5 }}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
-    </CustomExerciseHeader>
+        </Modal>
+      </CustomExerciseHeader>
+    </>
   );
 };
 

@@ -24,6 +24,7 @@ interface Props {
   isExam: boolean;
   finishExercise: (failed: boolean, isRetry: boolean) => void;
   failExercise: () => void;
+  showExerciseFeedback: (message: string, failed: boolean) => void;
 }
 
 export const CustomExercise = ({
@@ -31,25 +32,22 @@ export const CustomExercise = ({
   isExam,
   finishExercise,
   failExercise,
+  showExerciseFeedback,
 }: Props) => {
   const [correct, setCorrect] = useState(-1);
   const [incorrect, setIncorrect] = useState(-1);
   const [fails, setFails] = useState(0);
-  const [showMessage, setshowMessage] = useState(false);
-  const [messageText, setmessageText] = useState("");
   const [disableButtons, setDisableButtons] = useState(false);
   const [listening, setListening] = useState(false);
 
   const checkAnswer = (option: string, index: number) => {
     if (option.localeCompare(exercise.correctOption) === 0) {
       setDisableButtons(true);
-      setshowMessage(true);
-      setmessageText("Respuesta correcta!");
+      showExerciseFeedback("Respuesta correcta!", false);
       setCorrect(index);
       setIncorrect(-1);
       setTimeout(() => {
         setDisableButtons(false);
-        setshowMessage(false);
         let isRetry = fails > 0;
         finishExercise(false, isRetry);
 
@@ -62,8 +60,7 @@ export const CustomExercise = ({
       setIncorrect(index);
       if (isExam || fails > 0) {
         setDisableButtons(true);
-        setshowMessage(true);
-        setmessageText("Respuesta incorrecta");
+        showExerciseFeedback("Respuesta incorrecta", true);
         setTimeout(() => {
           setDisableButtons(false);
           failExercise();
@@ -72,15 +69,13 @@ export const CustomExercise = ({
           setCorrect(-1);
           setIncorrect(-1);
           setFails(0);
-          setshowMessage(false);
         }, 1500);
       } else {
         setFails(fails + 1);
-        setshowMessage(true);
-        setmessageText("Respuesta incorrecta, vuelve a intentarlo!");
-        setTimeout(() => {
-          setshowMessage(false);
-        }, 1500);
+        showExerciseFeedback(
+          "Respuesta incorrecta, vuelve a intentarlo!",
+          true
+        );
       }
     }
   };
@@ -100,12 +95,6 @@ export const CustomExercise = ({
 
   return (
     <View style={homeStyles.container}>
-      <CustomSnackBar
-        visible={showMessage}
-        message={messageText}
-        error={incorrect != -1}
-      />
-
       <View style={homeStyles.titleContainer}>
         <Text style={homeStyles.title}>{exercise.title}</Text>
         {exercise.type.localeCompare("listen") !== 0 && (

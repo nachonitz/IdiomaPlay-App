@@ -28,7 +28,7 @@ export const CustomSnackBar = ({ visible, message, error = false }: Props) => {
 const snackStyles = StyleSheet.create({
   container: {
     position: "absolute",
-    top: 0,
+    top: 90,
     height: 50,
     width: "100%",
     justifyContent: "center",

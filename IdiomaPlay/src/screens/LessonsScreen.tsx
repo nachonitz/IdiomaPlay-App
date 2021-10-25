@@ -289,27 +289,27 @@ export const LessonsScreen = ({ route }: any) => {
                     </View>
                   )}
               </View>
-              <View
-                style={{
-                  marginTop: 10,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                {!completedExam &&
-                  !(
-                    completedLessons.findIndex(
-                      (element) => element.value === false
-                    ) !== -1
-                  ) && (
+              {!completedExam &&
+                !(
+                  completedLessons.findIndex(
+                    (element) => element.value === false
+                  ) !== -1
+                ) && (
+                  <View
+                    style={{
+                      marginTop: 10,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
                     <Text style={{ color: "white", fontStyle: "italic" }}>
                       ¡{examOpportunities}{" "}
                       {examOpportunities > 1
                         ? "oportunidades restantes!"
                         : "oportunidad restante!"}
                     </Text>
-                  )}
-              </View>
+                  </View>
+                )}
             </Card>
           </TouchableOpacity>
         )}
