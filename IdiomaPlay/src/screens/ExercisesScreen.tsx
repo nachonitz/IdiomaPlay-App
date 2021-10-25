@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
 } from "react-native";
 import CountDown from "react-native-countdown-component";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -123,13 +124,11 @@ export const ExercisesScreen = ({ route }: any) => {
   const finishExercise = async (failed?: boolean, isRetry?: boolean) => {
     if (failedExercises >= MAX_FAILED_EXERCISES && failed) {
       // Failed lesson
-      console.log("FALLO LECCION")
+      console.log("FALLO LECCION");
       setfailedLesson(true);
       if (route.params.isExam) {
         startParticipation();
-        setMessageModal(
-          "No has logrado completar correctamente el examen!"
-        );
+        setMessageModal("No has logrado completar correctamente el examen!");
       } else {
         setMessageModal(
           "No has logrado completar correctamente la lección, vuelve a intentarlo!"
@@ -238,7 +237,6 @@ export const ExercisesScreen = ({ route }: any) => {
       </View>
       <View style={homeStyles.spacer} />
 
-      
       <Modal
         animationType="slide"
         transparent={true}
@@ -266,7 +264,7 @@ export const ExercisesScreen = ({ route }: any) => {
                 paddingHorizontal: 20,
                 paddingVertical: 30,
                 borderWidth: 4,
-                borderColor:colors.wrong
+                borderColor: colors.wrong,
               },
               homeStyles.card,
             ]}
@@ -280,7 +278,8 @@ export const ExercisesScreen = ({ route }: any) => {
                 textAlign: "center",
               }}
             >
-              Has fallado 3 veces el examen, tendrás que realizar la unidad nuevamente
+              Has fallado 3 veces el examen, tendrás que realizar la unidad
+              nuevamente
             </Text>
             <TouchableOpacity
               style={[
@@ -390,7 +389,10 @@ export const ExercisesScreen = ({ route }: any) => {
               style={[
                 {
                   backgroundColor: colors.primary,
-                  width: (route.params.isExam && (!failedLesson && duration !== 0))? "90%":"80%",
+                  width:
+                    route.params.isExam && !failedLesson && duration !== 0
+                      ? "90%"
+                      : "80%",
                   height: 50,
                   justifyContent: "center",
                   alignItems: "center",
@@ -401,12 +403,16 @@ export const ExercisesScreen = ({ route }: any) => {
                 if (duration === 0 && route.params.isExam) {
                   startParticipation();
                 }
-                if (route.params.isExam && (failedLesson || duration === 0) && route.params.examOpportunities === 1){
+                if (
+                  route.params.isExam &&
+                  (failedLesson || duration === 0) &&
+                  route.params.examOpportunities === 1
+                ) {
                   setShowModal(false);
                   setShowModalRetryUnit(true);
                 } else {
-                  if (route.params.isExam && (!failedLesson && duration !== 0)){
-                    navigation.navigate(Screens.units)
+                  if (route.params.isExam && !failedLesson && duration !== 0) {
+                    navigation.navigate(Screens.units);
                   } else {
                     navigation.navigate(Screens.lessons, {
                       unitId: route.params.unitId,
@@ -419,7 +425,10 @@ export const ExercisesScreen = ({ route }: any) => {
               <Text
                 style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
               >
-                Volver a {(route.params.isExam && (!failedLesson && duration !== 0)) ?"las unidades":"la unidad"}
+                Volver a{" "}
+                {route.params.isExam && !failedLesson && duration !== 0
+                  ? "las unidades"
+                  : "la unidad"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -469,7 +478,7 @@ export const ExercisesScreen = ({ route }: any) => {
             </TouchableOpacity>
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: "bold",
                 color: colors.darkPrimary,
                 marginBottom: 20,
@@ -483,10 +492,11 @@ export const ExercisesScreen = ({ route }: any) => {
                 {
                   backgroundColor: colors.lightPrimary,
                   width: "100%",
-                  height: 50,
-                  justifyContent: "space-evenly",
+                  height: 60,
+                  justifyContent: "space-between",
                   alignItems: "center",
                   flexDirection: "row",
+                  paddingHorizontal: 12,
                 },
                 homeStyles.card,
               ]}
@@ -496,25 +506,38 @@ export const ExercisesScreen = ({ route }: any) => {
               }}
             >
               <Text
-                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+                style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
               >
                 30 segundos extra
               </Text>
-              <Text
-                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
-                10
-              </Text>
+                <Text
+                  style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                >
+                  200
+                </Text>
+                <Image
+                  source={require("../assets/token.png")}
+                  style={{ height: 22, width: 22, marginLeft: 5 }}
+                />
+              </View>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 {
                   backgroundColor: colors.lightPrimary,
                   width: "100%",
-                  height: 50,
-                  justifyContent: "space-evenly",
+                  height: 60,
+                  justifyContent: "space-between",
                   alignItems: "center",
                   flexDirection: "row",
+                  paddingHorizontal: 12,
                 },
                 homeStyles.card,
               ]}
@@ -524,25 +547,75 @@ export const ExercisesScreen = ({ route }: any) => {
               }}
             >
               <Text
-                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+                style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  color: "white",
+                  marginLeft: 20,
+                }}
               >
                 1 minuto extra
               </Text>
               <Text
-                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+                style={{
+                  fontSize: 19,
+                  fontWeight: "bold",
+                  color: colors.correct,
+                  transform: [{ rotate: "-40deg" }],
+                  position: "absolute",
+                  left: -2,
+                  top: 7,
+                }}
               >
-                20
+                -25%
               </Text>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: colors.correct,
+                  }}
+                >
+                  300
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontWeight: "bold",
+                    color: "lightgrey",
+                    position: "absolute",
+                    top: -15,
+                    left: 4,
+                    textDecorationLine: "line-through",
+                    textDecorationStyle: "solid",
+                  }}
+                >
+                  400
+                </Text>
+                <Image
+                  source={require("../assets/token.png")}
+                  style={{ height: 22, width: 22, marginLeft: 5 }}
+                />
+              </View>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 {
                   backgroundColor: colors.lightPrimary,
                   width: "100%",
-                  height: 50,
-                  justifyContent: "space-evenly",
+                  height: 60,
+                  justifyContent: "space-between",
                   alignItems: "center",
                   flexDirection: "row",
+                  paddingHorizontal: 12,
                 },
                 homeStyles.card,
               ]}
@@ -552,15 +625,27 @@ export const ExercisesScreen = ({ route }: any) => {
               }}
             >
               <Text
-                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+                style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
               >
                 3 minutos extra
               </Text>
-              <Text
-                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
-                30
-              </Text>
+                <Text
+                  style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                >
+                  450
+                </Text>
+                <Image
+                  source={require("../assets/token.png")}
+                  style={{ height: 22, width: 22, marginLeft: 5 }}
+                />
+              </View>
             </TouchableOpacity>
           </View>
         </View>

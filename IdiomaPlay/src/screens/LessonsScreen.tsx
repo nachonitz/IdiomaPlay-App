@@ -23,7 +23,7 @@ export const LessonsScreen = ({ route }: any) => {
   const [examId, setExamId] = useState(-1);
   const [completedLessons, setcompletedLessons] = useState<Array<any>>([]);
   const [completedExam, setCompletedExam] = useState(false);
-  const [examOpportunities, setExamOpportunities] = useState(-1)
+  const [examOpportunities, setExamOpportunities] = useState(-1);
 
   const getLessons = async () => {
     try {
@@ -82,24 +82,27 @@ export const LessonsScreen = ({ route }: any) => {
 
   const getExamOpportunities = async () => {
     try {
-      const resp = await IdiomaPlayApi.get('participations/',
-        {
-          params: {
-            page: 1,
-            user: 1,
-            unit: route.params.unitId,
-          }
-        }
-      )
-      const examParticipationsFailed = resp.data.items.filter(function(item:any){
-        return ((item.exam !== null) && (item.correctExercises < config.passingAmountOfExcercisesPerExam));
-      }).length
-      console.log(examOpportunities)
-      setExamOpportunities(3-examParticipationsFailed)
+      const resp = await IdiomaPlayApi.get("participations/", {
+        params: {
+          page: 1,
+          user: 1,
+          unit: route.params.unitId,
+        },
+      });
+      const examParticipationsFailed = resp.data.items.filter(function (
+        item: any
+      ) {
+        return (
+          item.exam !== null &&
+          item.correctExercises < config.passingAmountOfExcercisesPerExam
+        );
+      }).length;
+      console.log(examOpportunities);
+      setExamOpportunities(3 - examParticipationsFailed);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
     getLessons();
@@ -117,6 +120,32 @@ export const LessonsScreen = ({ route }: any) => {
   return (
     <CustomHeaderScreen logo profile>
       <View style={homeStyles.container}>
+        <TouchableOpacity
+          style={{
+            marginBottom: 10,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+          onPress={() => {
+            navigation.navigate(Screens.units);
+          }}
+        >
+          <Icon
+            name="chevron-back-outline"
+            size={25}
+            color={colors.lightPrimary}
+          />
+          <Text
+            style={{
+              color: colors.lightPrimary,
+              fontSize: 15,
+              fontWeight: "bold",
+            }}
+          >
+            Unidades
+          </Text>
+        </TouchableOpacity>
+
         {lessons.length > 0 &&
           completedLessons.length > 0 &&
           lessons.map((lesson: any, index) => (
@@ -204,7 +233,8 @@ export const LessonsScreen = ({ route }: any) => {
                 <Text style={{ ...homeStyles.cardTitle, color: "white" }}>
                   Exam
                 </Text>
-                {!completedExam && examOpportunities !== -1 &&
+                {!completedExam &&
+                  examOpportunities !== -1 &&
                   !(
                     completedLessons.findIndex(
                       (element) => element.value === false
@@ -231,17 +261,29 @@ export const LessonsScreen = ({ route }: any) => {
                         <Icon
                           name="ellipse"
                           size={19}
-                          color={examOpportunities > 0 ? colors.darkPrimary : "lightgray"}
+                          color={
+                            examOpportunities > 0
+                              ? colors.darkPrimary
+                              : "lightgray"
+                          }
                         />
                         <Icon
                           name="ellipse"
                           size={19}
-                          color={examOpportunities > 1 ? colors.darkPrimary : "lightgray"}
+                          color={
+                            examOpportunities > 1
+                              ? colors.darkPrimary
+                              : "lightgray"
+                          }
                         />
                         <Icon
                           name="ellipse"
                           size={19}
-                          color={examOpportunities > 2 ? colors.darkPrimary : "lightgray"}
+                          color={
+                            examOpportunities > 2
+                              ? colors.darkPrimary
+                              : "lightgray"
+                          }
                         />
                       </View>
                     </View>
@@ -261,7 +303,10 @@ export const LessonsScreen = ({ route }: any) => {
                     ) !== -1
                   ) && (
                     <Text style={{ color: "white", fontStyle: "italic" }}>
-                      ¡{examOpportunities} {examOpportunities > 1 ? "oportunidades restantes!": "oportunidad restante!"}
+                      ¡{examOpportunities}{" "}
+                      {examOpportunities > 1
+                        ? "oportunidades restantes!"
+                        : "oportunidad restante!"}
                     </Text>
                   )}
               </View>
@@ -278,7 +323,7 @@ export const LessonsScreen = ({ route }: any) => {
 const homeStyles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
+    marginTop: 10,
   },
   card: {
     height: 75,

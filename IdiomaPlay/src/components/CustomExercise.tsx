@@ -90,8 +90,8 @@ export const CustomExercise = ({
     Speech.speak(exercise.sentence, {
       language: "en",
       pitch: 0.8,
-      rate: 0.8,
-      volume: -50,
+      rate: 0.9,
+      volume: 50,
       onDone: () => {
         setListening(false);
       },
