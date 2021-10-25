@@ -31,6 +31,7 @@ export const ExercisesScreen = ({ route }: any) => {
   const [duration, setDuration] = useState(0);
   const [clockRunning, setClockRunning] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showModalStore, setShowModalStore] = useState(false);
   const [messageModal, setMessageModal] = useState("");
   const MAX_FAILED_EXERCISES = route.params.isExam ? 4 : 2;
   const [points, setPoints] = useState(0);
@@ -91,7 +92,7 @@ export const ExercisesScreen = ({ route }: any) => {
       const exercises = await respondLessons.json();
       console.log(exercises);
       setExercises(exercises.exercises);
-      setDuration(exercises.examTimeInSeconds);
+      setDuration(5);
     } catch (error) {
       // setError(true);
       console.error(error);
@@ -175,7 +176,6 @@ export const ExercisesScreen = ({ route }: any) => {
   };
 
   useEffect(() => {
-    console.log("PRIMER USE EFFECT");
     if (route.params.isExam) {
       getExam();
     } else {
@@ -187,7 +187,6 @@ export const ExercisesScreen = ({ route }: any) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("blur", () => {
-      console.log("SEGUNDO");
       setClockRunning(false);
     });
 
@@ -264,11 +263,16 @@ export const ExercisesScreen = ({ route }: any) => {
                 justifyContent: "space-evenly",
                 paddingHorizontal: 20,
                 paddingVertical: 30,
+                borderWidth: 4,
+                borderColor:
+                  failedLesson || duration === 0
+                    ? colors.wrong
+                    : colors.correct,
               },
               homeStyles.card,
             ]}
           >
-            {failedLesson ? (
+            {failedLesson || duration === 0 ? (
               <Icon name="sad-outline" size={90} color={colors.wrong} />
             ) : (
               <Icon name="happy-outline" size={90} color={colors.correct} />
@@ -288,7 +292,7 @@ export const ExercisesScreen = ({ route }: any) => {
               <TouchableOpacity
                 style={[
                   {
-                    backgroundColor: colors.primary,
+                    backgroundColor: colors.lightPrimary,
                     width: "80%",
                     height: 50,
                     justifyContent: "center",
@@ -296,9 +300,9 @@ export const ExercisesScreen = ({ route }: any) => {
                   },
                   homeStyles.card,
                 ]}
-                onPress={async () => {
-                  await buyTime(30, 50);
+                onPress={() => {
                   setShowModal(false);
+                  setShowModalStore(true);
                 }}
               >
                 <Text
@@ -339,6 +343,146 @@ export const ExercisesScreen = ({ route }: any) => {
           </View>
         </View>
       </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showModalStore}
+        // onRequestClose={() => {
+        //   navigation.navigate(Screens.home)
+        // }}
+      >
+        <View
+          style={{
+            backgroundColor: "rgba(0,0,0,0.6)",
+            justifyContent: "center",
+            flex: 1,
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={[
+              {
+                backgroundColor: "white",
+                height: Dimensions.get("window").height * 0.55,
+                width: Dimensions.get("window").width * 0.8,
+                alignItems: "center",
+                justifyContent: "space-around",
+                paddingHorizontal: 20,
+                paddingVertical: 30,
+                borderWidth: 4,
+                borderColor: colors.lightPrimary,
+              },
+              homeStyles.card,
+            ]}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                setShowModalStore(false);
+                setShowModal(true);
+              }}
+              activeOpacity={0.6}
+              style={{ position: "absolute", top: 10, right: 10 }}
+            >
+              <Icon name="close-circle-outline" size={33} color={"lightgrey"} />
+            </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                color: colors.darkPrimary,
+                marginBottom: 20,
+              }}
+            >
+              Tienda
+            </Text>
+
+            <TouchableOpacity
+              style={[
+                {
+                  backgroundColor: colors.lightPrimary,
+                  width: "100%",
+                  height: 50,
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  flexDirection: "row",
+                },
+                homeStyles.card,
+              ]}
+              onPress={async () => {
+                await buyTime(30, 10);
+                setShowModalStore(false);
+              }}
+            >
+              <Text
+                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+              >
+                30 segundos extra
+              </Text>
+              <Text
+                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+              >
+                10
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                {
+                  backgroundColor: colors.lightPrimary,
+                  width: "100%",
+                  height: 50,
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  flexDirection: "row",
+                },
+                homeStyles.card,
+              ]}
+              onPress={async () => {
+                await buyTime(60, 20);
+                setShowModalStore(false);
+              }}
+            >
+              <Text
+                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+              >
+                1 minuto extra
+              </Text>
+              <Text
+                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+              >
+                20
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                {
+                  backgroundColor: colors.lightPrimary,
+                  width: "100%",
+                  height: 50,
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  flexDirection: "row",
+                },
+                homeStyles.card,
+              ]}
+              onPress={async () => {
+                await buyTime(180, 30);
+                setShowModalStore(false);
+              }}
+            >
+              <Text
+                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+              >
+                3 minutos extra
+              </Text>
+              <Text
+                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+              >
+                30
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </CustomExerciseHeader>
   );
 };
@@ -350,7 +494,6 @@ const homeStyles = StyleSheet.create({
   },
   card: {
     borderRadius: 10,
-    borderWidth: 0,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
