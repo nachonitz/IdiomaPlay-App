@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Touchable,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { CustomHeaderScreen } from "../components/CustomHeaderScreen";
 import { styles } from "../theme/appTheme";
@@ -22,9 +23,11 @@ export const UnitsScreen = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const [units, setUnits] = useState([]);
   const [unitsInfo, setUnitsInfo] = useState<Array<any>>([]);
+  const [loading, setloading] = useState(false);
 
   const getUnits = async () => {
     try {
+      setloading(true);
       const resp = await IdiomaPlayApi.get("/units", {
         params: {
           limit: 20,
@@ -76,6 +79,7 @@ export const UnitsScreen = () => {
       //   console.error(error)
       // }
       setUnitsInfo(completed);
+      setloading(false);
     } catch (error) {
       // setError(true);
       console.error(error);
@@ -143,7 +147,7 @@ export const UnitsScreen = () => {
 
   useEffect(() => {
     const subscribe = navigation.addListener("focus", () => {
-      getUnits()
+      getUnits();
     });
     return subscribe;
   }, [navigation]);
@@ -151,98 +155,110 @@ export const UnitsScreen = () => {
   return (
     <CustomHeaderScreen logo profile>
       <View style={homeStyles.container}>
-        {units.length > 0 &&
-          unitsInfo.length > 0 &&
-          units.map((unit: any, index) => (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate(Screens.lessons, { unitId: unit["id"] });
-              }}
-              activeOpacity={0.8}
-              disabled={unitsInfo[index].completed}
-              key={unit.id}
-            >
-              <Card
-                containerStyle={[
-                  homeStyles.card,
-                  unitsInfo[index].value && { backgroundColor: colors.correct },
-                  unitsInfo[index].completed && {
-                    borderColor: colors.correct,
-                    borderWidth: 2.5,
-                  },
-                ]}
-              >
-                <Text
-                  style={{
-                    ...homeStyles.cardTitle,
-                    // color: unitsInfo[index].completed
-                    //   ? "green"
-                    //   : colors.darkPrimary,
+        {loading && (
+          <ActivityIndicator size={"large"} color={colors.lightPrimary} />
+        )}
+        {!loading && (
+          <>
+            {units.length > 0 &&
+              unitsInfo.length > 0 &&
+              units.map((unit: any, index) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate(Screens.lessons, {
+                      unitId: unit["id"],
+                    });
                   }}
+                  activeOpacity={0.8}
+                  disabled={unitsInfo[index].completed}
+                  key={unit.id}
                 >
-                  {unit.title}
-                </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    marginTop: 10,
-                    justifyContent: "flex-start",
-                  }}
-                >
-                  <ProgressChart
-                    data={[
-                      unitsInfo[index].completedLessons /
-                        unitsInfo[index].numberOfLessons,
+                  <Card
+                    containerStyle={[
+                      homeStyles.card,
+                      unitsInfo[index].value && {
+                        backgroundColor: colors.correct,
+                      },
+                      unitsInfo[index].completed && {
+                        borderColor: colors.correct,
+                        borderWidth: 2.5,
+                      },
                     ]}
-                    width={55}
-                    height={55}
-                    radius={22}
-                    chartConfig={{
-                      backgroundGradientFrom: "white",
-                      backgroundGradientTo: "white",
-                      decimalPlaces: 2, // optional, defaults to 2dp
-                      color: unitsInfo[index].completed
-                        ? (opacity = 1) => colors.correct
-                        : (opacity = 1) => `rgba(78, 195, 233, ${opacity})`,
-                    }}
-                    hideLegend={true}
-                    strokeWidth={8}
-                  />
-                  <View
-                    style={{
-                      justifyContent: "space-evenly",
-                      alignItems: "center",
-                      marginLeft: 20,
-                    }}
                   >
                     <Text
                       style={{
-                        color: colors.darkPrimary,
-                        fontWeight: "bold",
+                        ...homeStyles.cardTitle,
+                        // color: unitsInfo[index].completed
+                        //   ? "green"
+                        //   : colors.darkPrimary,
                       }}
                     >
-                      {unitsInfo[index].completedLessons} {" de "}
-                      {unitsInfo[index].numberOfLessons} {"lecciones completas"}
+                      {unit.title}
                     </Text>
-                    {unitsInfo[index].completedLessons ===
-                      unitsInfo[index].numberOfLessons && (
-                      <Text
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        marginTop: 10,
+                        justifyContent: "flex-start",
+                      }}
+                    >
+                      <ProgressChart
+                        data={[
+                          unitsInfo[index].completedLessons /
+                            unitsInfo[index].numberOfLessons,
+                        ]}
+                        width={55}
+                        height={55}
+                        radius={22}
+                        chartConfig={{
+                          backgroundGradientFrom: "white",
+                          backgroundGradientTo: "white",
+                          decimalPlaces: 2, // optional, defaults to 2dp
+                          color: unitsInfo[index].completed
+                            ? (opacity = 1) => colors.correct
+                            : (opacity = 1) => `rgba(78, 195, 233, ${opacity})`,
+                        }}
+                        hideLegend={true}
+                        strokeWidth={8}
+                      />
+                      <View
                         style={{
-                          color: colors.darkPrimary,
-                          fontWeight: "bold",
+                          justifyContent: "space-evenly",
+                          alignItems: "center",
+                          marginLeft: 20,
                         }}
                       >
-                        {unitsInfo[index].completed
-                          ? "Examen aprobado"
-                          : "Examen pendiente"}
-                      </Text>
-                    )}
-                  </View>
-                </View>
-              </Card>
-            </TouchableOpacity>
-          ))}
-        <View style={homeStyles.spacer} />
+                        <Text
+                          style={{
+                            color: colors.darkPrimary,
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {unitsInfo[index].completedLessons} {" de "}
+                          {unitsInfo[index].numberOfLessons}{" "}
+                          {"lecciones completas"}
+                        </Text>
+                        {unitsInfo[index].completedLessons ===
+                          unitsInfo[index].numberOfLessons && (
+                          <Text
+                            style={{
+                              color: colors.darkPrimary,
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {unitsInfo[index].completed
+                              ? "Examen aprobado"
+                              : "Examen pendiente"}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  </Card>
+                </TouchableOpacity>
+              ))}
+            <View style={homeStyles.spacer} />
+          </>
+        )}
       </View>
     </CustomHeaderScreen>
   );
