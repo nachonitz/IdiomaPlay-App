@@ -40,6 +40,7 @@ export const ExercisesScreen = ({ route }: any) => {
   const [boughtTime, setBoughtTime] = useState(false);
   const [isShowingEarnPointsAnimation, setShowEarnPointsAnimation] =
     useState(false);
+  const [showModalRetryUnit, setShowModalRetryUnit] = useState(false);
 
   const startParticipation = async () => {
     try {
@@ -122,11 +123,12 @@ export const ExercisesScreen = ({ route }: any) => {
   const finishExercise = async (failed?: boolean, isRetry?: boolean) => {
     if (failedExercises >= MAX_FAILED_EXERCISES && failed) {
       // Failed lesson
+      console.log("FALLO LECCION")
       setfailedLesson(true);
       if (route.params.isExam) {
         startParticipation();
         setMessageModal(
-          "No has logrado completar correctamente el examen, vuelve a intentarlo!"
+          "No has logrado completar correctamente el examen!"
         );
       } else {
         setMessageModal(
@@ -236,6 +238,78 @@ export const ExercisesScreen = ({ route }: any) => {
       </View>
       <View style={homeStyles.spacer} />
 
+      
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showModalRetryUnit}
+        // onRequestClose={() => {
+        //   navigation.navigate(Screens.home)
+        // }}
+      >
+        <View
+          style={{
+            backgroundColor: "rgba(0,0,0,0.6)",
+            justifyContent: "center",
+            flex: 1,
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={[
+              {
+                backgroundColor: "white",
+                height: Dimensions.get("window").height * 0.55,
+                width: Dimensions.get("window").width * 0.8,
+                alignItems: "center",
+                justifyContent: "space-evenly",
+                paddingHorizontal: 20,
+                paddingVertical: 30,
+                borderWidth: 4,
+                borderColor:colors.wrong
+              },
+              homeStyles.card,
+            ]}
+          >
+            <Icon name="sad-outline" size={90} color={colors.wrong} />
+
+            <Text
+              style={{
+                fontSize: 23,
+                color: colors.darkPrimary,
+                textAlign: "center",
+              }}
+            >
+              Has fallado 3 veces el examen, tendrás que realizar la unidad nuevamente
+            </Text>
+            <TouchableOpacity
+              style={[
+                {
+                  backgroundColor: colors.primary,
+                  width: "80%",
+                  height: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
+                },
+                homeStyles.card,
+              ]}
+              onPress={() => {
+                navigation.navigate(Screens.lessons, {
+                  unitId: route.params.unitId,
+                });
+                setShowModalRetryUnit(false);
+              }}
+            >
+              <Text
+                style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+              >
+                Volver a la unidad
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -264,14 +338,14 @@ export const ExercisesScreen = ({ route }: any) => {
                 paddingVertical: 30,
                 borderWidth: 4,
                 borderColor:
-                  failedLesson || duration === 0
+                  failedLesson || (duration === 0 && route.params.isExam)
                     ? colors.wrong
                     : colors.correct,
               },
               homeStyles.card,
             ]}
           >
-            {failedLesson || duration === 0 ? (
+            {failedLesson || (duration === 0 && route.params.isExam) ? (
               <Icon name="sad-outline" size={90} color={colors.wrong} />
             ) : (
               <Icon name="happy-outline" size={90} color={colors.correct} />
@@ -316,7 +390,7 @@ export const ExercisesScreen = ({ route }: any) => {
               style={[
                 {
                   backgroundColor: colors.primary,
-                  width: "80%",
+                  width: (route.params.isExam && (!failedLesson && duration !== 0))? "90%":"80%",
                   height: 50,
                   justifyContent: "center",
                   alignItems: "center",
@@ -327,16 +401,25 @@ export const ExercisesScreen = ({ route }: any) => {
                 if (duration === 0 && route.params.isExam) {
                   startParticipation();
                 }
-                navigation.navigate(Screens.lessons, {
-                  unitId: route.params.unitId,
-                });
-                setShowModal(false);
+                if (route.params.isExam && (failedLesson || duration === 0) && route.params.examOpportunities === 1){
+                  setShowModal(false);
+                  setShowModalRetryUnit(true);
+                } else {
+                  if (route.params.isExam && (!failedLesson && duration !== 0)){
+                    navigation.navigate(Screens.units)
+                  } else {
+                    navigation.navigate(Screens.lessons, {
+                      unitId: route.params.unitId,
+                    });
+                  }
+                  setShowModal(false);
+                }
               }}
             >
               <Text
                 style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
               >
-                Volver a la unidad
+                Volver a {(route.params.isExam && (!failedLesson && duration !== 0)) ?"las unidades":"la unidad"}
               </Text>
             </TouchableOpacity>
           </View>

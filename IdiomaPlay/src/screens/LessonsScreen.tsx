@@ -168,6 +168,7 @@ export const LessonsScreen = ({ route }: any) => {
                 examId: examId,
                 isExam: true,
                 unitId: route.params.unitId,
+                examOpportunities: examOpportunities,
               });
             }}
             activeOpacity={0.8}
