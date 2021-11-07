@@ -27,7 +27,7 @@ export const WelcomeScreen = () => {
     if (response?.type === 'success') {
       const { authentication } = response;
       console.log(response)
-      navigation.replace(Screens.units)
+      navigation.replace(Screens.challenges)
     }
   }, [response]);
 

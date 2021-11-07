@@ -18,38 +18,36 @@ import { colors } from "../theme/colors";
 import { config } from "../../Configuration";
 import { VictoryPie } from "victory";
 import { ProgressChart } from "react-native-chart-kit";
-import Icon from "react-native-vector-icons/Ionicons";
 
-export const UnitsScreen = ({ route }: any) => {
+export const ChallengesScreen = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-  const [units, setUnits] = useState([]);
-  const [unitsInfo, setUnitsInfo] = useState<Array<any>>([]);
+  const [challenges, setChallenges] = useState([]);
+  const [challengesInfo, setChallengesInfo] = useState<Array<any>>([]);
   const [loading, setloading] = useState(false);
 
-  const getUnits = async () => {
+  const getChallenges = async () => {
     try {
       setloading(true);
-      const resp = await IdiomaPlayApi.get("/challenges/"+ route.params.challengeId, {
-        params: {
-          limit: 20,
-        },
+      const resp = await IdiomaPlayApi.get("/challenges", {
       });
-      console.log(resp.data)
-      setUnits(resp.data.units);
+      setChallenges(resp.data.items)
+      console.log(resp.data.items);
       const completed: Array<any> = [];
-      const length = resp.data.units.length;
-      const units = resp.data.units;
+      const length = resp.data.items.length;
+      const challenges = resp.data.items;
       for (var i = 0; i < length; i++) {
-        const unitId = units[i].id;
+        const challengeId = challenges[i].id;
+        console.log(challengeId)
         const dict = {
-          unitId: unitId,
-          completed: await checkCompletedUnit(unitId),
-          numberOfLessons: await getUnitNumberOfLessons(unitId),
-          completedLessons: await getUnitCompletedLessons(unitId),
+          challengeId: challengeId,
+          completed: false,//await checkCompletedUnit(challengeId),
+          numberOfUnits: await getChallengeNumberOfUnits(challengeId),
+          completedUnits: await getChallengeCompletedUnits(challengeId),
         };
         completed.push(dict);
       }
-      setUnitsInfo(completed);
+      console.log(completed)
+      setChallengesInfo(completed);
       setloading(false);
     } catch (error) {
       // setError(true);
@@ -77,48 +75,48 @@ export const UnitsScreen = ({ route }: any) => {
     }
   };
 
-  const getUnitNumberOfLessons = async (unitId: number) => {
+  const getChallengeNumberOfUnits = async (challengeId: number) => {
     try {
-      const resp = await IdiomaPlayApi.get("/units/" + unitId, {});
+      const resp = await IdiomaPlayApi.get("/challenges/" + challengeId, {});
 
-      let numberOfLessons = resp.data.lessons.length;
-      console.log(numberOfLessons);
-      return numberOfLessons;
+      let numberOfUnits = resp.data.units.length;
+      console.log(numberOfUnits);
+      return numberOfUnits;
     } catch (error) {
       console.error(error);
     }
   };
 
-  const getUnitCompletedLessons = async (unitId: number) => {
+  const getChallengeCompletedUnits = async (challengeId: number) => {
     try {
       const resp = await IdiomaPlayApi.get("/participations", {
         params: {
-          unit: unitId,
           user: 1,
         },
       });
 
-      let completedLessons = resp.data.items.filter(function (item: any) {
+      let completedUnits = resp.data.items.filter(function (item: any) {
         console.log(item);
         return (
-          item.exam == null &&
-          item.correctExercises >= config.passingAmountOfExcercisesPerLesson
+          item.unit.challenge.id == challengeId &&
+          item.exam !== null &&
+          item.correctExercises >= config.passingAmountOfExcercisesPerExam
         );
       }).length;
-      console.log(completedLessons);
-      return completedLessons;
+      console.log(completedUnits);
+      return completedUnits;
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    getUnits();
+    getChallenges();
   }, []);
 
   useEffect(() => {
     const subscribe = navigation.addListener("focus", () => {
-      getUnits();
+        getChallenges();
     });
     return subscribe;
   }, [navigation]);
@@ -126,57 +124,31 @@ export const UnitsScreen = ({ route }: any) => {
   return (
     <CustomHeaderScreen logo profile>
       <View style={homeStyles.container}>
-      <TouchableOpacity
-          style={{
-            marginBottom: 10,
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-          onPress={() => {
-            navigation.navigate(Screens.challenges);
-          }}
-        >
-          <Icon
-            name="chevron-back-outline"
-            size={25}
-            color={colors.lightPrimary}
-          />
-          <Text
-            style={{
-              color: colors.lightPrimary,
-              fontSize: 15,
-              fontWeight: "bold",
-            }}
-          >
-            Desafíos
-          </Text>
-        </TouchableOpacity>
-
         {loading && (
           <ActivityIndicator size={"large"} color={colors.lightPrimary} />
         )}
         {!loading && (
           <>
-            {units.length > 0 &&
-              unitsInfo.length > 0 &&
-              units.map((unit: any, index) => (
+            {challenges.length > 0 &&
+              challengesInfo.length > 0 &&
+              challenges.map((challenge: any, index) => (
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate(Screens.lessons, {
-                      unitId: unit["id"],
+                    navigation.navigate(Screens.units, {
+                      challengeId: challenge["id"],
                     });
                   }}
                   activeOpacity={0.8}
-                  disabled={unitsInfo[index].completed}
-                  key={unit.id}
+                  disabled={challengesInfo[index].completed}
+                  key={challenge.id}
                 >
                   <Card
                     containerStyle={[
                       homeStyles.card,
-                      unitsInfo[index].value && {
+                      challengesInfo[index].value && {
                         backgroundColor: colors.correct,
                       },
-                      unitsInfo[index].completed && {
+                      challengesInfo[index].completed && {
                         borderColor: colors.correct,
                         borderWidth: 2.5,
                       },
@@ -190,7 +162,7 @@ export const UnitsScreen = ({ route }: any) => {
                         //   : colors.darkPrimary,
                       }}
                     >
-                      {unit.title}
+                      {challenge.title}
                     </Text>
                     <View
                       style={{
@@ -201,8 +173,8 @@ export const UnitsScreen = ({ route }: any) => {
                     >
                       <ProgressChart
                         data={[
-                          unitsInfo[index].completedLessons /
-                            unitsInfo[index].numberOfLessons,
+                          challengesInfo[index].completedUnits /
+                            challengesInfo[index].numberOfUnits,
                         ]}
                         width={55}
                         height={55}
@@ -211,7 +183,7 @@ export const UnitsScreen = ({ route }: any) => {
                           backgroundGradientFrom: "white",
                           backgroundGradientTo: "white",
                           decimalPlaces: 2, // optional, defaults to 2dp
-                          color: unitsInfo[index].completed
+                          color: challengesInfo[index].completed
                             ? (opacity = 1) => colors.correct
                             : (opacity = 1) => `rgba(78, 195, 233, ${opacity})`,
                         }}
@@ -231,23 +203,10 @@ export const UnitsScreen = ({ route }: any) => {
                             fontWeight: "bold",
                           }}
                         >
-                          {unitsInfo[index].completedLessons} {" de "}
-                          {unitsInfo[index].numberOfLessons}{" "}
-                          {"lecciones completas"}
+                          {challengesInfo[index].completedUnits} {" de "}
+                          {challengesInfo[index].numberOfUnits}{" "}
+                          {"unidades completas"}
                         </Text>
-                        {unitsInfo[index].completedLessons ===
-                          unitsInfo[index].numberOfLessons && (
-                          <Text
-                            style={{
-                              color: colors.darkPrimary,
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {unitsInfo[index].completed
-                              ? "Examen aprobado"
-                              : "Examen pendiente"}
-                          </Text>
-                        )}
                       </View>
                     </View>
                   </Card>
