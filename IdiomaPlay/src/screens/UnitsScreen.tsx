@@ -6,6 +6,8 @@ import {
   Touchable,
   TouchableOpacity,
   ActivityIndicator,
+  Modal,
+  Dimensions,
 } from "react-native";
 import { CustomHeaderScreen } from "../components/CustomHeaderScreen";
 import { styles } from "../theme/appTheme";
@@ -25,6 +27,7 @@ export const UnitsScreen = ({ route }: any) => {
   const [units, setUnits] = useState([]);
   const [unitsInfo, setUnitsInfo] = useState<Array<any>>([]);
   const [loading, setloading] = useState(false);
+  const [finishedChallenge, setFinishedChallenge] = useState(false);
 
   const getUnits = async () => {
     try {
@@ -39,6 +42,7 @@ export const UnitsScreen = ({ route }: any) => {
       const completed: Array<any> = [];
       const length = resp.data.units.length;
       const units = resp.data.units;
+      let finishedAllUnits = true
       for (var i = 0; i < length; i++) {
         const unitId = units[i].id;
         const dict = {
@@ -47,8 +51,12 @@ export const UnitsScreen = ({ route }: any) => {
           numberOfLessons: await getUnitNumberOfLessons(unitId),
           completedLessons: await getUnitCompletedLessons(unitId),
         };
+        if (dict.completed == false) {
+          finishedAllUnits = false;
+        }
         completed.push(dict);
       }
+      setFinishedChallenge(finishedAllUnits);
       setUnitsInfo(completed);
       setloading(false);
     } catch (error) {
@@ -256,7 +264,77 @@ export const UnitsScreen = ({ route }: any) => {
             <View style={homeStyles.spacer} />
           </>
         )}
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={finishedChallenge}
+          // onRequestClose={() => {
+          //   navigation.navigate(Screens.home)
+          // }}
+        >
+          <View
+            style={{
+              backgroundColor: "rgba(0,0,0,0.6)",
+              justifyContent: "center",
+              flex: 1,
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={[
+                {
+                  backgroundColor: "white",
+                  height: Dimensions.get("window").height * 0.55,
+                  width: Dimensions.get("window").width * 0.8,
+                  alignItems: "center",
+                  justifyContent: "space-evenly",
+                  paddingHorizontal: 20,
+                  paddingVertical: 30,
+                  borderWidth: 4,
+                  borderColor: colors.correct,
+                },
+                homeStyles.cardModal,
+              ]}
+            >
+              <Icon name="happy-outline" size={90} color={colors.correct} />
+              <Text
+                style={{
+                  fontSize: 23,
+                  color: colors.darkPrimary,
+                  textAlign: "center",
+                }}
+              >
+                Felicitaciones! Has completado el desafío correctamente
+              </Text>
+              <TouchableOpacity
+                style={[
+                  {
+                    backgroundColor: colors.primary,
+                    width: "80%",
+                    height: 50,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  },
+                  homeStyles.cardModal,
+                ]}
+                onPress={() => {
+                  setFinishedChallenge(false);
+                  navigation.replace(Screens.challenges)
+                }}
+              >
+                <Text
+                  style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+                >
+                  Volver a los desafíos
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
       </View>
+
     </CustomHeaderScreen>
   );
 };
@@ -265,6 +343,17 @@ const homeStyles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 20,
+  },
+  cardModal: {
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+    elevation: 9,
   },
   card: {
     height: 130,

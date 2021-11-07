@@ -31,22 +31,22 @@ export const ChallengesScreen = () => {
       const resp = await IdiomaPlayApi.get("/challenges", {
       });
       setChallenges(resp.data.items)
-      console.log(resp.data.items);
       const completed: Array<any> = [];
       const length = resp.data.items.length;
       const challenges = resp.data.items;
+      const currentChallengeId = await getCurrentChallengeId();
       for (var i = 0; i < length; i++) {
         const challengeId = challenges[i].id;
-        console.log(challengeId)
         const dict = {
           challengeId: challengeId,
+          canJoinChallenge: (currentChallengeId == challengeId || currentChallengeId == null),
           completed: false,//await checkCompletedUnit(challengeId),
           numberOfUnits: await getChallengeNumberOfUnits(challengeId),
           completedUnits: await getChallengeCompletedUnits(challengeId),
         };
+        dict.completed = dict.numberOfUnits == dict.completedUnits
         completed.push(dict);
       }
-      console.log(completed)
       setChallengesInfo(completed);
       setloading(false);
     } catch (error) {
@@ -55,21 +55,15 @@ export const ChallengesScreen = () => {
     }
   };
 
-  const checkCompletedUnit = async (unitId: number) => {
+  const getCurrentChallengeId = async () => {
     try {
-      const resp = await IdiomaPlayApi.get("/participations", {
-        params: {
-          unit: unitId,
-          userId: 1,
-        },
+      const resp = await IdiomaPlayApi.get("/users/"+1, {
       });
-      let exams = resp.data.items.filter(function (item: any) {
-        return (
-          item.exam !== null &&
-          item.correctExercises >= config.passingAmountOfExcercisesPerExam
-        );
-      }).length;
-      return exams >= 1;
+      let challengeParticipation = resp.data.challengeParticipation;
+      if (challengeParticipation == null) {
+        return null;
+      }
+      return challengeParticipation.challenge.id;
     } catch (error) {
       console.error(error);
     }
@@ -139,14 +133,16 @@ export const ChallengesScreen = () => {
                     });
                   }}
                   activeOpacity={0.8}
-                  disabled={challengesInfo[index].completed}
+                  disabled={challengesInfo[index].completed || !challengesInfo[index].canJoinChallenge}
                   key={challenge.id}
                 >
                   <Card
                     containerStyle={[
                       homeStyles.card,
-                      challengesInfo[index].value && {
-                        backgroundColor: colors.correct,
+                      !challengesInfo[index].canJoinChallenge  && !challengesInfo[index].completed ? {
+                        backgroundColor: "lightgray",
+                      }: {
+                        backgroundColor: "white"
                       },
                       challengesInfo[index].completed && {
                         borderColor: colors.correct,
@@ -179,14 +175,25 @@ export const ChallengesScreen = () => {
                         width={55}
                         height={55}
                         radius={22}
-                        chartConfig={{
-                          backgroundGradientFrom: "white",
-                          backgroundGradientTo: "white",
+                        chartConfig={
+                          !challengesInfo[index].canJoinChallenge && !challengesInfo[index].completed ?
+                          {
+                          backgroundGradientFrom: "lightgray",
+                          backgroundGradientTo: "lightgray",
                           decimalPlaces: 2, // optional, defaults to 2dp
                           color: challengesInfo[index].completed
                             ? (opacity = 1) => colors.correct
                             : (opacity = 1) => `rgba(78, 195, 233, ${opacity})`,
-                        }}
+                          }:
+                          {
+                            backgroundGradientFrom: "white",
+                            backgroundGradientTo: "white",
+                            decimalPlaces: 2, // optional, defaults to 2dp
+                            color: challengesInfo[index].completed
+                              ? (opacity = 1) => colors.correct
+                              : (opacity = 1) => `rgba(78, 195, 233, ${opacity})`,
+                          }
+                        }
                         hideLegend={true}
                         strokeWidth={8}
                       />
