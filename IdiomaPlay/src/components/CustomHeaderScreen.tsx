@@ -5,7 +5,7 @@ import { styles } from "../theme/appTheme";
 import { colors } from "../theme/colors";
 import { CustomBackArrow } from "./CustomBackArrow";
 import { CustomKeyboardAvoidingView } from "./CustomKeyboardAvoidingView";
-import { CustomProfileButton } from "./CustomProfileButton";
+import { CustomLogOutButton } from "./CustomLogOutButton";
 
 export const CustomHeaderScreen = ({
   children,
@@ -61,7 +61,7 @@ export const CustomHeaderScreen = ({
               justifyContent: "center",
             }}
           >
-            {profile && <CustomProfileButton white />}
+            {profile && <CustomLogOutButton white />}
           </View>
         </View>
 

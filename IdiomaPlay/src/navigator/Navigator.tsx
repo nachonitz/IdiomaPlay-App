@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { createStackNavigator } from '@react-navigation/stack';
 import { WelcomeScreen } from "../screens/WelcomeScreen";
 import { LessonsScreen } from "../screens/LessonsScreen";
 import { ExercisesScreen } from "../screens/ExercisesScreen";
 import { UnitsScreen } from "../screens/UnitsScreen";
-import { ChallengesScreen } from "../screens/ChallengesScreen";
+import { AuthContext } from "../context/AuthContext";
+import { ChallengesScreen } from '../screens/ChallengesScreen';
 
 const Stack = createStackNavigator();
 
 export const Navigator = () => {
-  
+  const context = useContext(AuthContext);
 
   return (
     <Stack.Navigator
@@ -20,11 +21,22 @@ export const Navigator = () => {
         }
       }}
     >
-      <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
-      <Stack.Screen name="ChallengesScreen" component={ChallengesScreen} />
-      <Stack.Screen name="UnitsScreen" component={UnitsScreen} />
-      <Stack.Screen name="LessonsScreen" component={LessonsScreen} />
-      <Stack.Screen name="ExercisesScreen" component={ExercisesScreen} />
+      {context.status == 'authenticated'
+      ? (
+        <>
+          <Stack.Screen name="ChallengesScreen" component={ChallengesScreen} />
+          <Stack.Screen name="UnitsScreen" component={UnitsScreen} />
+          <Stack.Screen name="LessonsScreen" component={LessonsScreen} />
+          <Stack.Screen name="ExercisesScreen" component={ExercisesScreen} />
+        </>
+      )
+      :(
+        <>
+          <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+        </>
+      )
+      }
+      
     </Stack.Navigator>
   );
 }

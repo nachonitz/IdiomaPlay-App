@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Text,Image, View } from 'react-native'
 import { StyleSheet } from 'react-native'
 import { CustomButton } from '../components/CustomButton'
@@ -9,12 +9,14 @@ import { Screens } from '../navigator/Screens';
 import { StackNavigationProp } from '@react-navigation/stack'
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
+import { AuthContext } from '../context/AuthContext'
 
 WebBrowser.maybeCompleteAuthSession();
 
 
 export const WelcomeScreen = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>()
+  const context = useContext(AuthContext)
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     expoClientId: '1039607438247-8ganubrmrmbd8ar0knjhs9rhltdal3u8.apps.googleusercontent.com',
@@ -27,7 +29,7 @@ export const WelcomeScreen = () => {
     if (response?.type === 'success') {
       const { authentication } = response;
       console.log(response)
-      navigation.replace(Screens.challenges)
+      context.status != 'authenticated' && context.logIn('google token')
     }
   }, [response]);
 
