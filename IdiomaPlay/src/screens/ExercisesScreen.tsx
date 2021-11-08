@@ -98,7 +98,7 @@ export const ExercisesScreen = ({ route }: any) => {
       const exercises = await respondLessons.json();
       console.log(exercises);
       setExercises(exercises.exercises);
-      setDuration(5);
+      setDuration(300);
     } catch (error) {
       // setError(true);
       console.error(error);

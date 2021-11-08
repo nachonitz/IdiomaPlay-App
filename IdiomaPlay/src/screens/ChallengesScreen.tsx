@@ -41,8 +41,8 @@ export const ChallengesScreen = () => {
           canJoinChallenge:
             currentChallengeId == challengeId || currentChallengeId == null,
           completed: false, //await checkCompletedUnit(challengeId),
-          numberOfUnits: (await getChallengeNumberOfUnits(challengeId)) || 1,
-          completedUnits: (await getChallengeCompletedUnits(challengeId)) || 0,
+          numberOfUnits: await getChallengeNumberOfUnits(challengeId),
+          completedUnits: await getChallengeCompletedUnits(challengeId),
         };
         dict.completed = dict.numberOfUnits == dict.completedUnits;
         completed.push(dict);

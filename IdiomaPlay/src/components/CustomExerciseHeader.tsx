@@ -100,7 +100,7 @@ export const CustomExerciseHeader = ({
           >
             <View
               style={{
-                width: "10%",
+                width: "11%",
                 alignItems: "center",
                 justifyContent: "center",
               }}
@@ -127,7 +127,7 @@ export const CustomExerciseHeader = ({
 
             <View
               style={{
-                width: "10%",
+                width: "15%",
                 alignItems: "center",
                 justifyContent: "center",
               }}
