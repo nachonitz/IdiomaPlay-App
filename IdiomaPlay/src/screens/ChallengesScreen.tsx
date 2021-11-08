@@ -63,6 +63,9 @@ export const ChallengesScreen = () => {
       if (challengeParticipation == null) {
         return null;
       }
+      if (challengeParticipation.isPassed) {
+        return null;
+      }
       return challengeParticipation.challenge.id;
     } catch (error) {
       console.error(error);
