@@ -28,9 +28,8 @@ export const ChallengesScreen = () => {
   const getChallenges = async () => {
     try {
       setloading(true);
-      const resp = await IdiomaPlayApi.get("/challenges", {
-      });
-      setChallenges(resp.data.items)
+      const resp = await IdiomaPlayApi.get("/challenges", {});
+      setChallenges(resp.data.items);
       const completed: Array<any> = [];
       const length = resp.data.items.length;
       const challenges = resp.data.items;
@@ -39,12 +38,13 @@ export const ChallengesScreen = () => {
         const challengeId = challenges[i].id;
         const dict = {
           challengeId: challengeId,
-          canJoinChallenge: (currentChallengeId == challengeId || currentChallengeId == null),
-          completed: false,//await checkCompletedUnit(challengeId),
-          numberOfUnits: await getChallengeNumberOfUnits(challengeId),
-          completedUnits: await getChallengeCompletedUnits(challengeId),
+          canJoinChallenge:
+            currentChallengeId == challengeId || currentChallengeId == null,
+          completed: false, //await checkCompletedUnit(challengeId),
+          numberOfUnits: (await getChallengeNumberOfUnits(challengeId)) || 1,
+          completedUnits: (await getChallengeCompletedUnits(challengeId)) || 0,
         };
-        dict.completed = dict.numberOfUnits == dict.completedUnits
+        dict.completed = dict.numberOfUnits == dict.completedUnits;
         completed.push(dict);
       }
       setChallengesInfo(completed);
@@ -57,8 +57,7 @@ export const ChallengesScreen = () => {
 
   const getCurrentChallengeId = async () => {
     try {
-      const resp = await IdiomaPlayApi.get("/users/"+1, {
-      });
+      const resp = await IdiomaPlayApi.get("/users/" + 1, {});
       let challengeParticipation = resp.data.challengeParticipation;
       if (challengeParticipation == null) {
         return null;
@@ -113,7 +112,7 @@ export const ChallengesScreen = () => {
 
   useEffect(() => {
     const subscribe = navigation.addListener("focus", () => {
-        getChallenges();
+      getChallenges();
     });
     return subscribe;
   }, [navigation]);
@@ -136,17 +135,23 @@ export const ChallengesScreen = () => {
                     });
                   }}
                   activeOpacity={0.8}
-                  disabled={challengesInfo[index].completed || !challengesInfo[index].canJoinChallenge}
+                  disabled={
+                    challengesInfo[index].completed ||
+                    !challengesInfo[index].canJoinChallenge
+                  }
                   key={challenge.id}
                 >
                   <Card
                     containerStyle={[
                       homeStyles.card,
-                      !challengesInfo[index].canJoinChallenge  && !challengesInfo[index].completed ? {
-                        backgroundColor: "lightgray",
-                      }: {
-                        backgroundColor: "white"
-                      },
+                      !challengesInfo[index].canJoinChallenge &&
+                      !challengesInfo[index].completed
+                        ? {
+                            backgroundColor: "lightgray",
+                          }
+                        : {
+                            backgroundColor: "white",
+                          },
                       challengesInfo[index].completed && {
                         borderColor: colors.correct,
                         borderWidth: 2.5,
@@ -179,23 +184,26 @@ export const ChallengesScreen = () => {
                         height={55}
                         radius={22}
                         chartConfig={
-                          !challengesInfo[index].canJoinChallenge && !challengesInfo[index].completed ?
-                          {
-                          backgroundGradientFrom: "lightgray",
-                          backgroundGradientTo: "lightgray",
-                          decimalPlaces: 2, // optional, defaults to 2dp
-                          color: challengesInfo[index].completed
-                            ? (opacity = 1) => colors.correct
-                            : (opacity = 1) => `rgba(78, 195, 233, ${opacity})`,
-                          }:
-                          {
-                            backgroundGradientFrom: "white",
-                            backgroundGradientTo: "white",
-                            decimalPlaces: 2, // optional, defaults to 2dp
-                            color: challengesInfo[index].completed
-                              ? (opacity = 1) => colors.correct
-                              : (opacity = 1) => `rgba(78, 195, 233, ${opacity})`,
-                          }
+                          !challengesInfo[index].canJoinChallenge &&
+                          !challengesInfo[index].completed
+                            ? {
+                                backgroundGradientFrom: "lightgray",
+                                backgroundGradientTo: "lightgray",
+                                decimalPlaces: 2, // optional, defaults to 2dp
+                                color: challengesInfo[index].completed
+                                  ? (opacity = 1) => colors.correct
+                                  : (opacity = 1) =>
+                                      `rgba(78, 195, 233, ${opacity})`,
+                              }
+                            : {
+                                backgroundGradientFrom: "white",
+                                backgroundGradientTo: "white",
+                                decimalPlaces: 2, // optional, defaults to 2dp
+                                color: challengesInfo[index].completed
+                                  ? (opacity = 1) => colors.correct
+                                  : (opacity = 1) =>
+                                      `rgba(78, 195, 233, ${opacity})`,
+                              }
                         }
                         hideLegend={true}
                         strokeWidth={8}
@@ -236,7 +244,7 @@ const homeStyles = StyleSheet.create({
     marginTop: 20,
   },
   card: {
-    height: 130,
+    height: 145,
     borderRadius: 10,
     borderWidth: 0.5,
     borderColor: "lightgrey",

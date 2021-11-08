@@ -100,7 +100,7 @@ export const CustomExerciseHeader = ({
           >
             <View
               style={{
-                width: "9%",
+                width: "10%",
                 alignItems: "center",
                 justifyContent: "center",
               }}
@@ -127,12 +127,12 @@ export const CustomExerciseHeader = ({
 
             <View
               style={{
-                width: "9%",
+                width: "10%",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Text style={{ fontSize: 17, fontWeight: "700", color: "grey" }}>
+              <Text style={{ fontSize: 16, fontWeight: "700", color: "grey" }}>
                 {currentExercise}/{maxExercises}
               </Text>
             </View>
