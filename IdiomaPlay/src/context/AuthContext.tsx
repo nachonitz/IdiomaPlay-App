@@ -7,6 +7,8 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 // import { Notification } from 'expo-notifications';
 import { colors } from '../theme/colors';
+import * as Notifications from "expo-notifications";
+  import * as Permissions from "expo-permissions";
 
 type AuthContextProps =
   | {
@@ -45,6 +47,41 @@ export const AuthProvider = ({ children }: any) => {
 		await AsyncStorage.setItem('refreshToken', refreshToken);
 		await AsyncStorage.setItem('expoPushToken', expoPushToken);
   };
+  
+  
+  const askPermissions = async () => {
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      return false;
+    }
+    return true;
+  };
+  const scheduleNotification = async () => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+
+    let notificationId =  Notifications.scheduleNotificationAsync({
+      content: {
+      title: 'IdiomaPlay!',
+      body: 'Completa ejercicios todos los dias para mantener el ritmo! :)'
+      },
+      trigger: {
+      repeats: false,
+      seconds: 30,
+      }
+      });
+    console.log(notificationId);
+  };
 
   const logIn = async () => {
     try {
@@ -66,6 +103,10 @@ export const AuthProvider = ({ children }: any) => {
 			// 		}
 			// 	)
 			// }
+
+        scheduleNotification()
+    
+      
 			var googleToken = ''
       dispatch({
 				type: 'logIn',

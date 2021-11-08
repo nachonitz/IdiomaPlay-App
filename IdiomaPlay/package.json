@@ -16,6 +16,8 @@
     "expo": "~42.0.1",
     "expo-auth-session": "~3.3.1",
     "expo-linear-gradient": "~9.2.0",
+    "expo-notifications": "~0.12.3",
+    "expo-permissions": "~12.1.1",
     "expo-random": "~11.2.0",
     "expo-speech": "^9.2.1",
     "expo-status-bar": "~1.0.4",
