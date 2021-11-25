@@ -76,7 +76,6 @@ export const ChallengesScreen = () => {
       const resp = await IdiomaPlayApi.get("/challenges/" + challengeId, {});
 
       let numberOfUnits = resp.data.units.length;
-      console.log(numberOfUnits);
       return numberOfUnits;
     } catch (error) {
       console.error(error);
@@ -92,23 +91,22 @@ export const ChallengesScreen = () => {
       });
 
       let completedUnits = resp.data.items.filter(function (item: any) {
-        console.log(item);
         return (
+          item.unit.challege &&
           item.unit.challenge.id == challengeId &&
           item.exam !== null &&
           item.correctExercises >= config.passingAmountOfExcercisesPerExam
         );
       }).length;
-      console.log(completedUnits);
       return completedUnits;
     } catch (error) {
       console.error(error);
     }
   };
 
-  useEffect(() => {
-    getChallenges();
-  }, []);
+  // useEffect(() => {
+  //   getChallenges();
+  // }, []);
 
   useEffect(() => {
     const subscribe = navigation.addListener("focus", () => {
@@ -178,7 +176,7 @@ export const ChallengesScreen = () => {
                       <ProgressChart
                         data={[
                           challengesInfo[index].completedUnits /
-                            challengesInfo[index].numberOfUnits,
+                            challengesInfo[index].numberOfUnits || 1,
                         ]}
                         width={55}
                         height={55}
