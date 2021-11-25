@@ -28,14 +28,14 @@ const items: Slide[] = [
     img: require("../assets/languajes.png"),
   },
   {
-    title: "Registration",
+    title: "Enregistrement",
     desc: "Anim est quis elit proident magna quis cupidatat culpa labore Lorem ea. Exercitation mollit velit in aliquip tempor occaecat dolor minim amet dolor enim cillum excepteur. ",
-    img: require("../assets/languajes.png"),
+    img: require("../assets/googleSlide.png"),
   },
   {
-    title: "Let's get started",
+    title: "Todo listo? Comencemos!",
     desc: "Ex amet duis amet nulla. Aliquip ea Lorem ea culpa consequat proident. Nulla tempor esse ad tempor sit amet Lorem. Velit ea labore aute pariatur commodo duis veniam enim.",
-    img: require("../assets/languajes.png"),
+    img: require("../assets/thinking.jpeg"),
   },
 ];
 
@@ -49,7 +49,7 @@ export const SlidesScreen = () => {
     return (
       <View style={slidesStyles.itemContainer}>
         <Image source={item.img} style={slidesStyles.image} />
-        <Text>{item.title}</Text>
+        <Text style={slidesStyles.title}>{item.title}</Text>
         <Text style={slidesStyles.text}>{item.desc}</Text>
       </View>
     );
@@ -72,23 +72,26 @@ export const SlidesScreen = () => {
           // }
         }}
       />
-      <Pagination
-        dotsLength={items.length}
-        activeDotIndex={index}
-        dotStyle={slidesStyles.dots}
-      />
-      {index == 2 && (
-        <TouchableOpacity
-          style={slidesStyles.button}
-          activeOpacity={0.8}
-          onPress={() => {
-            navigation.navigate(Screens.welcome);
-          }}
-        >
-          <Text>Start</Text>
-          <Icon name="chevron-forward-outline" color="white" size={30} />
-        </TouchableOpacity>
-      )}
+
+      <View style={slidesStyles.pagination}>
+        <Pagination
+          dotsLength={items.length}
+          activeDotIndex={index}
+          dotStyle={slidesStyles.dots}
+        />
+        {index == 2 && (
+          <TouchableOpacity
+            style={slidesStyles.button}
+            activeOpacity={0.8}
+            onPress={() => {
+              navigation.navigate(Screens.welcome);
+            }}
+          >
+            <Text style={slidesStyles.buttonText}>Comenzar</Text>
+            <Icon name="chevron-forward-outline" color="white" size={30} />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -102,14 +105,26 @@ const slidesStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  pagination: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   image: {
-    width: 350,
-    height: 350,
-    resizeMode: "stretch",
+    width: screenWidth,
+    maxHeight: "50%",
+    resizeMode: "contain",
     marginBottom: 50,
   },
   text: {
+    fontSize: 15,
     color: colors.darkPrimary,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: colors.primary,
+    marginBottom: 25,
   },
   container: {
     flex: 1,
@@ -126,10 +141,18 @@ const slidesStyles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   button: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.lightPrimary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
+    width: 150,
+    height: 40,
+    borderRadius: 7,
+  },
+  buttonText: {
+    fontSize: 19,
+    fontWeight: "bold",
+    color: "white",
   },
   spacer: {
     height: 30,
