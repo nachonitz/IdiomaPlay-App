@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Modal,
   Dimensions,
+  Image,
 } from "react-native";
 import { CustomHeaderScreen } from "../components/CustomHeaderScreen";
 import { styles } from "../theme/appTheme";
@@ -21,6 +22,7 @@ import { config } from "../../Configuration";
 import { VictoryPie } from "victory";
 import { ProgressChart } from "react-native-chart-kit";
 import Icon from "react-native-vector-icons/Ionicons";
+import ConfettiCannon from "react-native-confetti-cannon";
 
 export const UnitsScreen = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -32,17 +34,20 @@ export const UnitsScreen = ({ route }: any) => {
   const getUnits = async () => {
     try {
       setloading(true);
-      const resp = await IdiomaPlayApi.get("/challenges/"+ route.params.challengeId, {
-        params: {
-          limit: 20,
-        },
-      });
-      console.log(resp.data)
+      const resp = await IdiomaPlayApi.get(
+        "/challenges/" + route.params.challengeId,
+        {
+          params: {
+            limit: 20,
+          },
+        }
+      );
+      console.log(resp.data);
       setUnits(resp.data.units);
       const completed: Array<any> = [];
       const length = resp.data.units.length;
       const units = resp.data.units;
-      let finishedAllUnits = true
+      let finishedAllUnits = true;
       for (var i = 0; i < length; i++) {
         const unitId = units[i].id;
         const dict = {
@@ -134,7 +139,7 @@ export const UnitsScreen = ({ route }: any) => {
   return (
     <CustomHeaderScreen logo profile>
       <View style={homeStyles.container}>
-      <TouchableOpacity
+        <TouchableOpacity
           style={{
             marginBottom: 10,
             flexDirection: "row",
@@ -281,6 +286,13 @@ export const UnitsScreen = ({ route }: any) => {
               alignItems: "center",
             }}
           >
+            <ConfettiCannon
+              count={200}
+              origin={{ x: -20, y: 0 }}
+              fallSpeed={4000}
+              fadeOut
+              explosionSpeed={100}
+            />
             <View
               style={[
                 {
@@ -297,7 +309,10 @@ export const UnitsScreen = ({ route }: any) => {
                 homeStyles.cardModal,
               ]}
             >
-              <Icon name="happy-outline" size={90} color={colors.correct} />
+              <Image
+                source={require("../assets/troph2.png")}
+                style={{ height: "30%", resizeMode: "contain" }}
+              />
               <Text
                 style={{
                   fontSize: 23,
@@ -320,7 +335,7 @@ export const UnitsScreen = ({ route }: any) => {
                 ]}
                 onPress={() => {
                   setFinishedChallenge(false);
-                  navigation.replace(Screens.challenges)
+                  navigation.replace(Screens.challenges);
                 }}
               >
                 <Text
@@ -332,9 +347,7 @@ export const UnitsScreen = ({ route }: any) => {
             </View>
           </View>
         </Modal>
-
       </View>
-
     </CustomHeaderScreen>
   );
 };

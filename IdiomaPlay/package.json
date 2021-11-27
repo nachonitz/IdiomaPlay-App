@@ -28,6 +28,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
     "react-native-async-storage": "^0.0.1",
     "react-native-chart-kit": "^6.11.0",
+    "react-native-confetti-cannon": "^1.5.2",
     "react-native-countdown-component": "^2.7.1",
     "react-native-elements": "^3.4.2",
     "react-native-gesture-handler": "~1.10.2",
