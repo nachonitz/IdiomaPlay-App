@@ -6,6 +6,7 @@ import {
   Touchable,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { CustomHeaderScreen } from "../components/CustomHeaderScreen";
 import { styles } from "../theme/appTheme";
@@ -91,13 +92,14 @@ export const ChallengesScreen = () => {
       });
 
       let completedUnits = resp.data.items.filter(function (item: any) {
+        console.log("Item --> ", item);
         return (
-          item.unit.challege &&
           item.unit.challenge.id == challengeId &&
           item.exam !== null &&
           item.correctExercises >= config.passingAmountOfExcercisesPerExam
         );
       }).length;
+      console.log(completedUnits);
       return completedUnits;
     } catch (error) {
       console.error(error);
@@ -156,6 +158,27 @@ export const ChallengesScreen = () => {
                       },
                     ]}
                   >
+                    {challengesInfo[index].completed && (
+                      <View
+                        style={{
+                          position: "absolute",
+                          top: -5,
+                          right: -15,
+                          height: 55,
+                          width: 55,
+                          zIndex: 10,
+                        }}
+                      >
+                        <Image
+                          source={require("../assets/troph3.png")}
+                          style={{
+                            height: "100%",
+                            width: "100%",
+                            resizeMode: "contain",
+                          }}
+                        />
+                      </View>
+                    )}
                     <Text
                       style={{
                         ...homeStyles.cardTitle,
