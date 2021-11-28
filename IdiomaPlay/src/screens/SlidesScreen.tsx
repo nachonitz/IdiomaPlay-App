@@ -57,6 +57,30 @@ export const SlidesScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate(Screens.welcome)}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          marginTop: 30,
+        }}
+      >
+        <Text
+          style={{
+            ...slidesStyles.buttonText,
+            color: colors.lightPrimary,
+            fontSize: 16,
+          }}
+        >
+          Omitir
+        </Text>
+        <Icon
+          name="chevron-forward-outline"
+          color={colors.lightPrimary}
+          size={22}
+        />
+      </TouchableOpacity>
       <Carousel
         data={items}
         renderItem={({ item }) => renderItem(item)}
