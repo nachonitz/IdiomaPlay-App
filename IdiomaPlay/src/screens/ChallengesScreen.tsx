@@ -30,10 +30,15 @@ export const ChallengesScreen = () => {
     try {
       setloading(true);
       const resp = await IdiomaPlayApi.get("/challenges", {});
-      setChallenges(resp.data.items);
+
+      let filteredChallenges = resp.data.items.filter(function (item: any) {
+        return item.enabled;
+      });
+
+      setChallenges(filteredChallenges);
       const completed: Array<any> = [];
-      const length = resp.data.items.length;
-      const challenges = resp.data.items;
+      const length = filteredChallenges.length;
+      const challenges = filteredChallenges;
       const currentChallengeId = await getCurrentChallengeId();
       for (var i = 0; i < length; i++) {
         const challengeId = challenges[i].id;
@@ -92,14 +97,12 @@ export const ChallengesScreen = () => {
       });
 
       let completedUnits = resp.data.items.filter(function (item: any) {
-        console.log("Item --> ", item);
         return (
           item.unit.challenge.id == challengeId &&
           item.exam !== null &&
           item.correctExercises >= config.passingAmountOfExcercisesPerExam
         );
       }).length;
-      console.log(completedUnits);
       return completedUnits;
     } catch (error) {
       console.error(error);
