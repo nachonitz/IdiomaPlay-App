@@ -14,6 +14,7 @@ import Carousel, { Pagination } from "react-native-snap-carousel";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Screens } from "../navigator/Screens";
 import { colors } from "../theme/colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Slide {
   title: string;
@@ -23,19 +24,24 @@ interface Slide {
 
 const items: Slide[] = [
   {
-    title: "Welcome!",
-    desc: "Ea et eu enim fugiat sunt reprehenderit sunt aute quis tempor ipsum cupidatat et.",
+    title: "Bienvenido!",
+    desc: "Hola, bienvenido a IdiomaPlay! Una aplicación en la que vas a poder aprender Inglés de la mejor manera... jugando!",
     img: require("../assets/languajes.png"),
   },
   {
-    title: "Enregistrement",
-    desc: "Anim est quis elit proident magna quis cupidatat culpa labore Lorem ea. Exercitation mollit velit in aliquip tempor occaecat dolor minim amet dolor enim cillum excepteur. ",
+    title: "Inicio de sesión",
+    desc: "Para entrar a la aplicación solo basta con ingresar con tu cuenta de Google! Sencillo, rápido y seguro!",
     img: require("../assets/googleSlide.png"),
   },
   {
-    title: "Todo listo? Comencemos!",
-    desc: "Ex amet duis amet nulla. Aliquip ea Lorem ea culpa consequat proident. Nulla tempor esse ad tempor sit amet Lorem. Velit ea labore aute pariatur commodo duis veniam enim.",
-    img: require("../assets/thinking.jpeg"),
+    title: "Primeros pasos",
+    desc: "Elegí el desafió que más se adecue a tu nivel y completá todas las unidades para obtener tu recompensa! Dentro de cada unidad vas a encontrar una serie de lecciones con un examen final",
+    img: require("../assets/challengesScreenshot.png"),
+  },
+  {
+    title: "Recompensas",
+    desc: "Al ir completando correctamente los ejercicios vas a sumar puntos, los cuales se pueden utilizar para comprar tiempo y vidas durante los exámenes!",
+    img: require("../assets/storeScreenshot.png"),
   },
 ];
 
@@ -54,6 +60,27 @@ export const SlidesScreen = () => {
       </View>
     );
   };
+
+  const slidesSeen = async () => {
+    await AsyncStorage.getItem("slidesSeen").then((item) => {
+      if (item == "true") {
+        return true;
+      }
+      return false;
+    });
+  };
+
+  const setSlidesAsSeen = async () => {
+    const seen = await AsyncStorage.setItem("slidesSeen", "true");
+  };
+
+  useEffect(() => {
+    // if (slidesSeen()) {
+    //   navigation.navigate(Screens.welcome);
+    // } else {
+    //   setSlidesAsSeen();
+    // }
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -103,7 +130,7 @@ export const SlidesScreen = () => {
           activeDotIndex={index}
           dotStyle={slidesStyles.dots}
         />
-        {index == 2 && (
+        {index == 3 && (
           <TouchableOpacity
             style={slidesStyles.button}
             activeOpacity={0.8}
