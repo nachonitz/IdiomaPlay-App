@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -19,12 +19,15 @@ import { colors } from "../theme/colors";
 import { config } from "../../Configuration";
 import { VictoryPie } from "victory";
 import { ProgressChart } from "react-native-chart-kit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../context/AuthContext";
 
 export const ChallengesScreen = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const [challenges, setChallenges] = useState([]);
   const [challengesInfo, setChallengesInfo] = useState<Array<any>>([]);
   const [loading, setloading] = useState(false);
+  const context = useContext(AuthContext);
 
   const getChallenges = async () => {
     try {
@@ -63,7 +66,8 @@ export const ChallengesScreen = () => {
 
   const getCurrentChallengeId = async () => {
     try {
-      const resp = await IdiomaPlayApi.get("/users/" + 1, {});
+      const id = context.status == "authenticated" && context.id;
+      const resp = await IdiomaPlayApi.get("/users/" + id, {});
       let challengeParticipation = resp.data.challengeParticipation;
       if (challengeParticipation == null) {
         return null;
@@ -90,9 +94,11 @@ export const ChallengesScreen = () => {
 
   const getChallengeCompletedUnits = async (challengeId: number) => {
     try {
+      const id = context.status == "authenticated" && context.id;
+      console.log("context id", id);
       const resp = await IdiomaPlayApi.get("/participations", {
         params: {
-          user: 1,
+          user: id,
         },
       });
 

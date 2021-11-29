@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -23,6 +23,7 @@ import { VictoryPie } from "victory";
 import { ProgressChart } from "react-native-chart-kit";
 import Icon from "react-native-vector-icons/Ionicons";
 import ConfettiCannon from "react-native-confetti-cannon";
+import { AuthContext } from "../context/AuthContext";
 
 export const UnitsScreen = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -30,10 +31,12 @@ export const UnitsScreen = ({ route }: any) => {
   const [unitsInfo, setUnitsInfo] = useState<Array<any>>([]);
   const [loading, setloading] = useState(false);
   const [finishedChallenge, setFinishedChallenge] = useState(false);
+  const context = useContext(AuthContext);
 
   const getUnits = async () => {
     try {
       setloading(true);
+
       const resp = await IdiomaPlayApi.get(
         "/challenges/" + route.params.challengeId,
         {
@@ -72,10 +75,11 @@ export const UnitsScreen = ({ route }: any) => {
 
   const checkCompletedUnit = async (unitId: number) => {
     try {
+      const id = context.status == "authenticated" && context.id;
       const resp = await IdiomaPlayApi.get("/participations", {
         params: {
           unit: unitId,
-          userId: 1,
+          userId: id,
         },
       });
       let exams = resp.data.items.filter(function (item: any) {
@@ -104,10 +108,11 @@ export const UnitsScreen = ({ route }: any) => {
 
   const getUnitCompletedLessons = async (unitId: number) => {
     try {
+      const id = context.status == "authenticated" && context.id;
       const resp = await IdiomaPlayApi.get("/participations", {
         params: {
           unit: unitId,
-          user: 1,
+          user: id,
         },
       });
 

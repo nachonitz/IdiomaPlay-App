@@ -1,36 +1,36 @@
-
 export type AuthState =
   | {
-      status: 'checking';
-
+      status: "checking";
     }
   | {
-      status: 'authenticated';
+      status: "authenticated";
       token: string;
+      id: number;
     }
   | {
-      status: 'not-authenticated';
-    };	
+      status: "not-authenticated";
+    };
 
 type AuthAction =
-  | { type: 'logIn'; payload: { token: string } }
-  | { type: 'logOut' };
-	
+  | { type: "logIn"; payload: { token: string; id: number } }
+  | { type: "logOut" };
+
 export const authReducer = (
   state: AuthState,
   action: AuthAction
 ): AuthState => {
   switch (action.type) {
-    case 'logIn':
+    case "logIn":
       return {
         ...state,
-        status: 'authenticated',
+        status: "authenticated",
         token: action.payload.token,
+        id: action.payload.id,
       };
-    case 'logOut':
+    case "logOut":
       return {
         ...state,
-        status: 'not-authenticated',
+        status: "not-authenticated",
       };
     default:
       return state;

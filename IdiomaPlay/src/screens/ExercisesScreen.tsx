@@ -1,6 +1,6 @@
 import { ParamListBase, useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Dimensions,
   Modal,
@@ -18,6 +18,7 @@ import { CustomExerciseHeader } from "../components/CustomExerciseHeader";
 import { CustomSnackBar } from "../components/CustomSnackBar";
 import { Screens } from "../navigator/Screens";
 import { colors } from "../theme/colors";
+import { AuthContext } from "../context/AuthContext";
 
 // TODO: mejorar tipos en el route
 // interface Props {
@@ -46,13 +47,15 @@ export const ExercisesScreen = ({ route }: any) => {
   const [showMessage, setshowMessage] = useState(false);
   const [messageText, setmessageText] = useState("");
   const [failedOption, setfailedOption] = useState(false);
+  const context = useContext(AuthContext);
 
   const startParticipation = async () => {
     try {
+      const id = context.status == "authenticated" && context.id;
       const participationResponse = await IdiomaPlayApi.post(
         "/participations",
         {
-          userId: 1,
+          userId: id,
           unitId: route.params.unitId,
           lessonId: route.params.isExam ? undefined : route.params.lessonId,
           examId: route.params.isExam ? route.params.examId : undefined,
@@ -82,7 +85,8 @@ export const ExercisesScreen = ({ route }: any) => {
 
   const getPoints = async () => {
     try {
-      const response = await IdiomaPlayApi.get("/users/" + 1);
+      const id = context.status == "authenticated" && context.id;
+      const response = await IdiomaPlayApi.get("/users/" + id);
       const points = response.data.points;
       setPoints(points);
     } catch (error) {
@@ -108,7 +112,8 @@ export const ExercisesScreen = ({ route }: any) => {
   const buyTime = async (time: number, requiredPoints: number) => {
     if (points < requiredPoints) return false;
     try {
-      const resp = await IdiomaPlayApi.patch("/users/" + "1", {
+      const id = context.status == "authenticated" && context.id;
+      const resp = await IdiomaPlayApi.patch("/users/" + id, {
         points: points - requiredPoints,
       });
       getPoints();
@@ -142,10 +147,11 @@ export const ExercisesScreen = ({ route }: any) => {
     } else {
       if (!route.params.isExam && !failed) {
         if (!isRetry) setShowEarnPointsAnimation(true);
+        const id = context.status == "authenticated" && context.id;
         const resp = await IdiomaPlayApi.patch(
           "/participations/" + participationID,
           {
-            userId: 1,
+            userId: id,
             unitId: route.params.unitId,
             lessonId: route.params.lessonId,
             examId: undefined,
@@ -159,8 +165,9 @@ export const ExercisesScreen = ({ route }: any) => {
         setcurrentExercise(currentExercise + 1);
       } else {
         if (route.params.isExam) {
+          const id = context.status == "authenticated" && context.id;
           const resp = await IdiomaPlayApi.post("/participations", {
-            userId: 1,
+            userId: id,
             unitId: route.params.unitId,
             lessonId: undefined,
             examId: route.params.examId,

@@ -1,40 +1,49 @@
-import React, { createContext, useEffect, useReducer, useRef, useState } from 'react';
-import { authReducer, AuthState } from './AuthReducer';
-import { AxiosResponse } from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
+import React, {
+  createContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
+import { authReducer, AuthState } from "./AuthReducer";
+import { AxiosResponse } from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
 // import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 // import { Notification } from 'expo-notifications';
-import { colors } from '../theme/colors';
+import { colors } from "../theme/colors";
 import * as Notifications from "expo-notifications";
-  import * as Permissions from "expo-permissions";
+import * as Permissions from "expo-permissions";
 
 type AuthContextProps =
   | {
-      status: 'checking';
-      logIn: (loginData: any) => void;
+      status: "checking";
+      logIn: (googleToken: string, id: number) => void;
     }
   | {
-      status: 'authenticated';
+      status: "authenticated";
       token: string;
+      id: number;
       logOut: () => void;
     }
   | {
-      status: 'not-authenticated';
-      logIn: (loginData: any) => void;
-    }
+      status: "not-authenticated";
+      logIn: (googleToken: string, id: number) => void;
+    };
 
 const authInicialState: AuthState = {
-  status: 'checking',
+  status: "checking",
 };
 
 export const AuthContext = createContext({} as AuthContextProps);
 
 export const AuthProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(authReducer, authInicialState);
-	const [expoPushToken, setExpoPushToken] = useState('');
-	const [notification, setNotification] = useState<boolean | Notification>(false);
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState<boolean | Notification>(
+    false
+  );
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
 
@@ -43,14 +52,15 @@ export const AuthProvider = ({ children }: any) => {
   }, []);
 
   const storeTokens = async (token: string, refreshToken: string) => {
-    await AsyncStorage.setItem('token', token);
-		await AsyncStorage.setItem('refreshToken', refreshToken);
-		await AsyncStorage.setItem('expoPushToken', expoPushToken);
+    await AsyncStorage.setItem("token", token);
+    await AsyncStorage.setItem("refreshToken", refreshToken);
+    await AsyncStorage.setItem("expoPushToken", expoPushToken);
   };
-  
-  
+
   const askPermissions = async () => {
-    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
     let finalStatus = existingStatus;
     if (existingStatus !== "granted") {
       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
@@ -70,20 +80,20 @@ export const AuthProvider = ({ children }: any) => {
       }),
     });
 
-    let notificationId =  Notifications.scheduleNotificationAsync({
+    let notificationId = Notifications.scheduleNotificationAsync({
       content: {
-      title: 'IdiomaPlay!',
-      body: 'Completa ejercicios todos los dias para mantener el ritmo! :)'
+        title: "IdiomaPlay!",
+        body: "Completa ejercicios todos los dias para mantener el ritmo! :)",
       },
       trigger: {
-      repeats: false,
-      seconds: 30,
-      }
-      });
+        repeats: false,
+        seconds: 30,
+      },
+    });
     console.log(notificationId);
   };
 
-  const logIn = async () => {
+  const logIn = async (googleToken: string, id: number) => {
     try {
       // const resp = await facimexApi.post('/user/login', {
       //   email,
@@ -91,45 +101,41 @@ export const AuthProvider = ({ children }: any) => {
       // });
       // // const decodingResult: e.Either<t.Errors, LoginResponse> =
       // //   LoginResponseCodec.decode(resp.data);
-			// if (Constants.isDevice) {
-			// 	const expoToken = await registerForPushNotificationsAsync();
-			// 	await facimexApi.post(
-			// 		'/user/expoPushToken',
-			// 		{ expoPushToken: expoToken },
-			// 		{
-			// 			headers: {
-			// 				Authorization: resp.data.data.session.token,
-			// 			},
-			// 		}
-			// 	)
-			// }
+      // if (Constants.isDevice) {
+      // 	const expoToken = await registerForPushNotificationsAsync();
+      // 	await facimexApi.post(
+      // 		'/user/expoPushToken',
+      // 		{ expoPushToken: expoToken },
+      // 		{
+      // 			headers: {
+      // 				Authorization: resp.data.data.session.token,
+      // 			},
+      // 		}
+      // 	)
+      // }
 
-        scheduleNotification()
-    
-      
-			var googleToken = ''
+      scheduleNotification();
+      await AsyncStorage.setItem("userId", id.toString());
+
       dispatch({
-				type: 'logIn',
-        payload: {token: googleToken},
+        type: "logIn",
+        payload: { token: googleToken, id },
       });
-			
     } catch (error: any) {
       console.log(error.response.data);
     }
   };
 
   const logOut = async () => {
-
-		await AsyncStorage.removeItem('token');
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("userId");
 
     dispatch({
-      type: 'logOut',
+      type: "logOut",
     });
   };
 
-	
-
-  if (state.status == 'not-authenticated') {
+  if (state.status == "not-authenticated") {
     return (
       <AuthContext.Provider
         value={{
@@ -140,7 +146,7 @@ export const AuthProvider = ({ children }: any) => {
         {children}
       </AuthContext.Provider>
     );
-  } else if (state.status == 'checking') {
+  } else if (state.status == "checking") {
     return (
       <AuthContext.Provider
         value={{
@@ -151,8 +157,7 @@ export const AuthProvider = ({ children }: any) => {
         {children}
       </AuthContext.Provider>
     );
-  } 
-  else {
+  } else {
     return (
       <AuthContext.Provider
         value={{

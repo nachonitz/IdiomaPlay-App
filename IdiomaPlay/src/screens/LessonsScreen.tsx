@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import IdiomaPlayApi from "../api/IdiomaPlayApi";
 import { colors } from "../theme/colors";
 import { config } from "../../Configuration";
 import Icon from "react-native-vector-icons/Ionicons";
+import { AuthContext } from "../context/AuthContext";
 
 export const LessonsScreen = ({ route }: any) => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -24,6 +25,7 @@ export const LessonsScreen = ({ route }: any) => {
   const [completedLessons, setcompletedLessons] = useState<Array<any>>([]);
   const [completedExam, setCompletedExam] = useState(false);
   const [examOpportunities, setExamOpportunities] = useState(-1);
+  const context = useContext(AuthContext);
 
   const getLessons = async () => {
     try {
@@ -41,10 +43,11 @@ export const LessonsScreen = ({ route }: any) => {
         completed.push(dict);
       }
       try {
+        const id = context.status == "authenticated" && context.id;
         const participationsResp = await IdiomaPlayApi.get("participations", {
           params: {
             page: 1,
-            user: 1,
+            user: id,
             unit: route.params.unitId,
           },
         });
@@ -82,10 +85,11 @@ export const LessonsScreen = ({ route }: any) => {
 
   const getExamOpportunities = async () => {
     try {
+      const id = context.status == "authenticated" && context.id;
       const resp = await IdiomaPlayApi.get("participations/", {
         params: {
           page: 1,
-          user: 1,
+          user: id,
           unit: route.params.unitId,
         },
       });
