@@ -34,13 +34,15 @@ export const ExercisesScreen = ({ route }: any) => {
   const [duration, setDuration] = useState(0);
   const [clockRunning, setClockRunning] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [showModalStore, setShowModalStore] = useState(false);
+  const [showModalTimeStore, setShowModalTimeStore] = useState(false);
+  const [showModalLivesStore, setShowModalLivesStore] = useState(false);
   const [messageModal, setMessageModal] = useState("");
   const MAX_FAILED_EXERCISES = route.params.isExam ? 4 : 2;
   const [points, setPoints] = useState(0);
   const [failedLesson, setfailedLesson] = useState(false);
   const [participationID, setParticipationsID] = useState(-1);
   const [boughtTime, setBoughtTime] = useState(false);
+  const [boughtLives, setBoughtLives] = useState(false);
   const [isShowingEarnPointsAnimation, setShowEarnPointsAnimation] =
     useState(false);
   const [showModalRetryUnit, setShowModalRetryUnit] = useState(false);
@@ -124,6 +126,22 @@ export const ExercisesScreen = ({ route }: any) => {
       console.error(error);
     }
   };
+  
+  const buyLives = async (lives: number, requiredPoints: number) => {
+    if (points < requiredPoints) return false;
+    try {
+      const id = context.status == "authenticated" && context.id;
+      const resp = await IdiomaPlayApi.patch("/users/" + id, {
+        points: points - requiredPoints,
+      });
+      getPoints();
+      // setPoints(points - requiredPoints)
+      setFailedExercises(failedExercises - lives);
+      setBoughtLives(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const failExercise = () => {
     finishExercise(true);
@@ -133,11 +151,13 @@ export const ExercisesScreen = ({ route }: any) => {
   const finishExercise = async (failed?: boolean, isRetry?: boolean) => {
     if (failedExercises >= MAX_FAILED_EXERCISES && failed) {
       // Failed lesson
-      console.log("FALLO LECCION");
       setfailedLesson(true);
       if (route.params.isExam) {
-        startParticipation();
-        setMessageModal("No has logrado completar correctamente el examen!");
+        //Que pasa si mientras estoy comprando vidas me quedo sin tiempo?
+        //Debería parar el tiempo mientras estoy en el store
+        // startParticipation();
+        setMessageModal("Te has quedado sin vidas!");
+        
       } else {
         setMessageModal(
           "No has logrado completar correctamente la lección, vuelve a intentarlo!"
@@ -239,7 +259,7 @@ export const ExercisesScreen = ({ route }: any) => {
             until={duration}
             onFinish={() => {
               setDuration(0);
-              setMessageModal("Te has quedado sin tiempo");
+              setMessageModal("Te has quedado sin tiempo!");
               setShowModal(true);
             }}
             timeToShow={["M", "S"]}
@@ -403,13 +423,38 @@ export const ExercisesScreen = ({ route }: any) => {
                   ]}
                   onPress={() => {
                     setShowModal(false);
-                    setShowModalStore(true);
+                    setShowModalTimeStore(true);
                   }}
                 >
                   <Text
                     style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
                   >
                     Comprar tiempo
+                  </Text>
+                </TouchableOpacity>
+              )}
+              
+              {route.params.isExam && !boughtLives && failedExercises >= MAX_FAILED_EXERCISES && (
+                <TouchableOpacity
+                  style={[
+                    {
+                      backgroundColor: colors.lightPrimary,
+                      width: "80%",
+                      height: 50,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    },
+                    homeStyles.card,
+                  ]}
+                  onPress={() => {
+                    setShowModal(false);
+                    setShowModalLivesStore(true);
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+                  >
+                    Comprar vidas
                   </Text>
                 </TouchableOpacity>
               )}
@@ -429,7 +474,7 @@ export const ExercisesScreen = ({ route }: any) => {
                   homeStyles.card,
                 ]}
                 onPress={() => {
-                  if (duration === 0 && route.params.isExam) {
+                  if ((duration === 0 || failedLesson) && route.params.isExam) {
                     startParticipation();
                   }
                   if (
@@ -470,7 +515,7 @@ export const ExercisesScreen = ({ route }: any) => {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={showModalStore}
+          visible={showModalTimeStore}
           // onRequestClose={() => {
           //   navigation.navigate(Screens.home)
           // }}
@@ -501,7 +546,7 @@ export const ExercisesScreen = ({ route }: any) => {
             >
               <TouchableOpacity
                 onPress={() => {
-                  setShowModalStore(false);
+                  setShowModalTimeStore(false);
                   setShowModal(true);
                 }}
                 activeOpacity={0.6}
@@ -538,8 +583,8 @@ export const ExercisesScreen = ({ route }: any) => {
                   homeStyles.card,
                 ]}
                 onPress={async () => {
-                  await buyTime(30, 10);
-                  setShowModalStore(false);
+                  await buyTime(30, 200);
+                  setShowModalTimeStore(false);
                 }}
               >
                 <Text
@@ -579,8 +624,8 @@ export const ExercisesScreen = ({ route }: any) => {
                   homeStyles.card,
                 ]}
                 onPress={async () => {
-                  await buyTime(60, 20);
-                  setShowModalStore(false);
+                  await buyTime(60, 300);
+                  setShowModalTimeStore(false);
                 }}
               >
                 <Text
@@ -657,8 +702,8 @@ export const ExercisesScreen = ({ route }: any) => {
                   homeStyles.card,
                 ]}
                 onPress={async () => {
-                  await buyTime(180, 30);
-                  setShowModalStore(false);
+                  await buyTime(180, 450);
+                  setShowModalTimeStore(false);
                 }}
               >
                 <Text
@@ -677,6 +722,228 @@ export const ExercisesScreen = ({ route }: any) => {
                     style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
                   >
                     450
+                  </Text>
+                  <Image
+                    source={require("../assets/token.png")}
+                    style={{ height: 22, width: 22, marginLeft: 5 }}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModalLivesStore}
+          // onRequestClose={() => {
+          //   navigation.navigate(Screens.home)
+          // }}
+        >
+          <View
+            style={{
+              backgroundColor: "rgba(0,0,0,0.6)",
+              justifyContent: "center",
+              flex: 1,
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={[
+                {
+                  backgroundColor: "white",
+                  height: Dimensions.get("window").height * 0.55,
+                  width: Dimensions.get("window").width * 0.8,
+                  alignItems: "center",
+                  justifyContent: "space-around",
+                  paddingHorizontal: 20,
+                  paddingVertical: 30,
+                  borderWidth: 4,
+                  borderColor: colors.lightPrimary,
+                },
+                homeStyles.card,
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  setShowModalLivesStore(false);
+                  setShowModal(true);
+                }}
+                activeOpacity={0.6}
+                style={{ position: "absolute", top: 10, right: 10 }}
+              >
+                <Icon
+                  name="close-circle-outline"
+                  size={33}
+                  color={"lightgrey"}
+                />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 22,
+                  fontWeight: "bold",
+                  color: colors.darkPrimary,
+                  marginBottom: 20,
+                }}
+              >
+                Tienda
+              </Text>
+
+              <TouchableOpacity
+                style={[
+                  {
+                    backgroundColor: colors.lightPrimary,
+                    width: "100%",
+                    height: 60,
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    paddingHorizontal: 12,
+                  },
+                  homeStyles.card,
+                ]}
+                onPress={async () => {
+                  await buyLives(1, 200);
+                  setShowModalLivesStore(false);
+                }}
+              >
+                <Text
+                  style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                >
+                  1 vida extra
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                  >
+                    200
+                  </Text>
+                  <Image
+                    source={require("../assets/token.png")}
+                    style={{ height: 22, width: 22, marginLeft: 5 }}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  {
+                    backgroundColor: colors.lightPrimary,
+                    width: "100%",
+                    height: 60,
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    paddingHorizontal: 12,
+                  },
+                  homeStyles.card,
+                ]}
+                onPress={async () => {
+                  await buyLives(2, 250);
+                  setShowModalLivesStore(false);
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: "white",
+                    marginLeft: 20,
+                  }}
+                >
+                  2 vidas extra
+                </Text>
+                
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                  >
+                    250
+                  </Text>
+                  
+                  <Image
+                    source={require("../assets/token.png")}
+                    style={{ height: 22, width: 22, marginLeft: 5 }}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  {
+                    backgroundColor: colors.lightPrimary,
+                    width: "100%",
+                    height: 60,
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    paddingHorizontal: 12,
+                  },
+                  homeStyles.card,
+                ]}
+                onPress={async () => {
+                  await buyLives(5, 300);
+                  setShowModalLivesStore(false);
+                }}
+              >
+                <Text
+                  style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                >
+                  5 vidas extra
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 19,
+                    fontWeight: "bold",
+                    color: colors.correct,
+                    transform: [{ rotate: "-40deg" }],
+                    position: "absolute",
+                    left: -2,
+                    top: 7,
+                  }}
+                >
+                  -50%
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: "bold",
+                      color: colors.correct,
+                    }}
+                  >
+                    300
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      fontWeight: "bold",
+                      color: "lightgrey",
+                      position: "absolute",
+                      top: -15,
+                      left: 4,
+                      textDecorationLine: "line-through",
+                      textDecorationStyle: "solid",
+                    }}
+                  >
+                    600
                   </Text>
                   <Image
                     source={require("../assets/token.png")}

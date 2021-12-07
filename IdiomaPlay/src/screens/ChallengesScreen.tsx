@@ -208,7 +208,7 @@ export const ChallengesScreen = () => {
                       <ProgressChart
                         data={[
                           challengesInfo[index].completedUnits /
-                            challengesInfo[index].numberOfUnits || 1,
+                            challengesInfo[index].numberOfUnits || 0,
                         ]}
                         width={55}
                         height={55}
