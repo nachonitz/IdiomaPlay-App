@@ -61,6 +61,7 @@ export const ExercisesScreen = ({ route }: any) => {
           unitId: route.params.unitId,
           lessonId: route.params.isExam ? undefined : route.params.lessonId,
           examId: route.params.isExam ? route.params.examId : undefined,
+          examTime: route.params.isExam ? 300 - duration: undefined,
           correctExercises: 0,
         }
       );
@@ -191,6 +192,7 @@ export const ExercisesScreen = ({ route }: any) => {
             unitId: route.params.unitId,
             lessonId: undefined,
             examId: route.params.examId,
+            examTime: route.params.isExam ? 300 - duration: undefined,
             correctExercises: currentExercise + 1 - failedExercises,
           });
           setMessageModal(
