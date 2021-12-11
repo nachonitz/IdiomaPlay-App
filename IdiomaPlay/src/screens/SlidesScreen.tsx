@@ -15,6 +15,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { Screens } from "../navigator/Screens";
 import { colors } from "../theme/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Slide {
   title: string;
@@ -50,6 +51,7 @@ const screenWidth = Dimensions.get("screen").width;
 export const SlidesScreen = () => {
   const [index, setindex] = useState(0);
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+  const {top} = useSafeAreaInsets()
 
   const renderItem = (item: Slide) => {
     return (
@@ -83,7 +85,7 @@ export const SlidesScreen = () => {
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingTop: top? top - 10 : 0, paddingBottom: 20  }}>
       <TouchableOpacity
         onPress={() => navigation.navigate(Screens.welcome)}
         style={{
@@ -91,6 +93,7 @@ export const SlidesScreen = () => {
           alignItems: "center",
           justifyContent: "flex-end",
           marginTop: 30,
+          marginRight: 15
         }}
       >
         <Text
@@ -199,6 +202,14 @@ const slidesStyles = StyleSheet.create({
     width: 150,
     height: 40,
     borderRadius: 7,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+    elevation: 9,
   },
   buttonText: {
     fontSize: 19,

@@ -79,8 +79,8 @@ export const CustomExerciseHeader = ({
         <View
           style={{
             ...customScreenStyles.headerContainer,
-            paddingTop: top ? top : 10,
-            height: 90 + (top ? top : 5),
+            paddingTop: top ? top -10  : 5,
+            height: 60 + (top ? top : 5),
             // backgroundColor: 'pink',
             flexDirection: "column",
             alignItems: "center",

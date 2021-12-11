@@ -810,7 +810,7 @@ export const ExercisesScreen = ({ route }: any) => {
                 }}
               >
                 <Text
-                  style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                  style={{ fontSize: 18, fontWeight: "bold", color: "white", marginLeft: 20, }}
                 >
                   1 vida extra
                 </Text>
@@ -822,7 +822,7 @@ export const ExercisesScreen = ({ route }: any) => {
                   }}
                 >
                   <Text
-                    style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                    style={{ fontSize: 18, fontWeight: "bold", color: "white"}}
                   >
                     200
                   </Text>
@@ -900,7 +900,7 @@ export const ExercisesScreen = ({ route }: any) => {
                 }}
               >
                 <Text
-                  style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                  style={{ fontSize: 18, fontWeight: "bold", color: "white", marginLeft: 20, }}
                 >
                   5 vidas extra
                 </Text>
