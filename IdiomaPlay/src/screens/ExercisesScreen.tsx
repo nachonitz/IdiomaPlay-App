@@ -61,7 +61,7 @@ export const ExercisesScreen = ({ route }: any) => {
           unitId: route.params.unitId,
           lessonId: route.params.isExam ? undefined : route.params.lessonId,
           examId: route.params.isExam ? route.params.examId : undefined,
-          examTime: route.params.isExam ? 300 - duration: undefined,
+          examTime: route.params.isExam ? 300 - duration : undefined,
           correctExercises: 0,
         }
       );
@@ -127,7 +127,7 @@ export const ExercisesScreen = ({ route }: any) => {
       console.error(error);
     }
   };
-  
+
   const buyLives = async (lives: number, requiredPoints: number) => {
     if (points < requiredPoints) return false;
     try {
@@ -152,14 +152,12 @@ export const ExercisesScreen = ({ route }: any) => {
   const finishExercise = async (failed?: boolean, isRetry?: boolean) => {
     if (failedExercises >= MAX_FAILED_EXERCISES && failed) {
       // Failed lesson
-      setfailedLesson(true);
       if (route.params.isExam) {
-        //Que pasa si mientras estoy comprando vidas me quedo sin tiempo?
-        //Debería parar el tiempo mientras estoy en el store
         // startParticipation();
         setMessageModal("Te has quedado sin vidas!");
-        
+        setClockRunning(false);
       } else {
+        setfailedLesson(true);
         setMessageModal(
           "No has logrado completar correctamente la lección, vuelve a intentarlo!"
         );
@@ -186,15 +184,18 @@ export const ExercisesScreen = ({ route }: any) => {
         setcurrentExercise(currentExercise + 1);
       } else {
         if (route.params.isExam) {
+          console.log("es examen terminado");
+
           const id = context.status == "authenticated" && context.id;
           const resp = await IdiomaPlayApi.post("/participations", {
             userId: id,
             unitId: route.params.unitId,
             lessonId: undefined,
             examId: route.params.examId,
-            examTime: route.params.isExam ? 300 - duration: undefined,
+            examTime: route.params.isExam ? 300 - duration : undefined,
             correctExercises: currentExercise + 1 - failedExercises,
           });
+          console.log(resp.data);
           setMessageModal(
             "Felicitaciones! Has completado el examen correctamente"
           );
@@ -435,31 +436,37 @@ export const ExercisesScreen = ({ route }: any) => {
                   </Text>
                 </TouchableOpacity>
               )}
-              
-              {route.params.isExam && !boughtLives && failedExercises >= MAX_FAILED_EXERCISES && (
-                <TouchableOpacity
-                  style={[
-                    {
-                      backgroundColor: colors.lightPrimary,
-                      width: "80%",
-                      height: 50,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    },
-                    homeStyles.card,
-                  ]}
-                  onPress={() => {
-                    setShowModal(false);
-                    setShowModalLivesStore(true);
-                  }}
-                >
-                  <Text
-                    style={{ fontSize: 20, fontWeight: "bold", color: "white" }}
+
+              {route.params.isExam &&
+                !boughtLives &&
+                failedExercises >= MAX_FAILED_EXERCISES && (
+                  <TouchableOpacity
+                    style={[
+                      {
+                        backgroundColor: colors.lightPrimary,
+                        width: "80%",
+                        height: 50,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      },
+                      homeStyles.card,
+                    ]}
+                    onPress={() => {
+                      setShowModal(false);
+                      setShowModalLivesStore(true);
+                    }}
                   >
-                    Comprar vidas
-                  </Text>
-                </TouchableOpacity>
-              )}
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        color: "white",
+                      }}
+                    >
+                      Comprar vidas
+                    </Text>
+                  </TouchableOpacity>
+                )}
 
               <TouchableOpacity
                 style={[
@@ -572,9 +579,11 @@ export const ExercisesScreen = ({ route }: any) => {
               </Text>
 
               <TouchableOpacity
+                disabled={points < 200}
                 style={[
                   {
-                    backgroundColor: colors.lightPrimary,
+                    backgroundColor:
+                      points < 200 ? "lightgrey" : colors.lightPrimary,
                     width: "100%",
                     height: 60,
                     justifyContent: "space-between",
@@ -613,9 +622,11 @@ export const ExercisesScreen = ({ route }: any) => {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={points < 300}
                 style={[
                   {
-                    backgroundColor: colors.lightPrimary,
+                    backgroundColor:
+                      points < 300 ? "lightgrey" : colors.lightPrimary,
                     width: "100%",
                     height: 60,
                     justifyContent: "space-between",
@@ -691,9 +702,11 @@ export const ExercisesScreen = ({ route }: any) => {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={points < 450}
                 style={[
                   {
-                    backgroundColor: colors.lightPrimary,
+                    backgroundColor:
+                      points < 450 ? "lightgrey" : colors.lightPrimary,
                     width: "100%",
                     height: 60,
                     justifyContent: "space-between",
@@ -792,9 +805,11 @@ export const ExercisesScreen = ({ route }: any) => {
               </Text>
 
               <TouchableOpacity
+                disabled={points < 200}
                 style={[
                   {
-                    backgroundColor: colors.lightPrimary,
+                    backgroundColor:
+                      points < 200 ? "lightgrey" : colors.lightPrimary,
                     width: "100%",
                     height: 60,
                     justifyContent: "space-between",
@@ -807,10 +822,16 @@ export const ExercisesScreen = ({ route }: any) => {
                 onPress={async () => {
                   await buyLives(1, 200);
                   setShowModalLivesStore(false);
+                  setClockRunning(true);
                 }}
               >
                 <Text
-                  style={{ fontSize: 18, fontWeight: "bold", color: "white", marginLeft: 20, }}
+                  style={{
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: "white",
+                    marginLeft: 20,
+                  }}
                 >
                   1 vida extra
                 </Text>
@@ -822,7 +843,7 @@ export const ExercisesScreen = ({ route }: any) => {
                   }}
                 >
                   <Text
-                    style={{ fontSize: 18, fontWeight: "bold", color: "white"}}
+                    style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
                   >
                     200
                   </Text>
@@ -833,9 +854,11 @@ export const ExercisesScreen = ({ route }: any) => {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={points < 250}
                 style={[
                   {
-                    backgroundColor: colors.lightPrimary,
+                    backgroundColor:
+                      points < 250 ? "lightgrey" : colors.lightPrimary,
                     width: "100%",
                     height: 60,
                     justifyContent: "space-between",
@@ -848,6 +871,7 @@ export const ExercisesScreen = ({ route }: any) => {
                 onPress={async () => {
                   await buyLives(2, 250);
                   setShowModalLivesStore(false);
+                  setClockRunning(true);
                 }}
               >
                 <Text
@@ -860,7 +884,6 @@ export const ExercisesScreen = ({ route }: any) => {
                 >
                   2 vidas extra
                 </Text>
-                
 
                 <View
                   style={{
@@ -874,7 +897,7 @@ export const ExercisesScreen = ({ route }: any) => {
                   >
                     250
                   </Text>
-                  
+
                   <Image
                     source={require("../assets/token.png")}
                     style={{ height: 22, width: 22, marginLeft: 5 }}
@@ -882,9 +905,11 @@ export const ExercisesScreen = ({ route }: any) => {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={points < 300}
                 style={[
                   {
-                    backgroundColor: colors.lightPrimary,
+                    backgroundColor:
+                      points < 300 ? "lightgrey" : colors.lightPrimary,
                     width: "100%",
                     height: 60,
                     justifyContent: "space-between",
@@ -897,10 +922,16 @@ export const ExercisesScreen = ({ route }: any) => {
                 onPress={async () => {
                   await buyLives(5, 300);
                   setShowModalLivesStore(false);
+                  setClockRunning(true);
                 }}
               >
                 <Text
-                  style={{ fontSize: 18, fontWeight: "bold", color: "white", marginLeft: 20, }}
+                  style={{
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: "white",
+                    marginLeft: 20,
+                  }}
                 >
                   5 vidas extra
                 </Text>

@@ -171,7 +171,7 @@ export const LessonsScreen = ({ route }: any) => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     // Fix harcoded width
-                    width: '95%',
+                    width: "95%",
                   }}
                 >
                   <Text style={homeStyles.cardTitle}>{lesson.title}</Text>
@@ -231,7 +231,7 @@ export const LessonsScreen = ({ route }: any) => {
                   justifyContent: "space-between",
                   alignItems: "center",
                   // Fix harcoded width
-                  width: '95%',
+                  width: "93%",
                 }}
               >
                 <Text style={{ ...homeStyles.cardTitle, color: "white" }}>

@@ -86,6 +86,7 @@ export const ChallengesScreen = () => {
       const resp = await IdiomaPlayApi.get("/challenges/" + challengeId, {});
 
       let numberOfUnits = resp.data.units.length;
+      console.log("Unidades: ", resp.data.units);
       return numberOfUnits;
     } catch (error) {
       console.error(error);
@@ -101,6 +102,7 @@ export const ChallengesScreen = () => {
           user: id,
         },
       });
+      console.log("participaciones: ", resp.data.items);
 
       let completedUnits = resp.data.items.filter(function (item: any) {
         return (
