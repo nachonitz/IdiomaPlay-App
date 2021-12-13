@@ -45,7 +45,6 @@ export const UnitsScreen = ({ route }: any) => {
           },
         }
       );
-      console.log(resp.data);
       setUnits(resp.data.units);
       const completed: Array<any> = [];
       const length = resp.data.units.length;
@@ -99,7 +98,6 @@ export const UnitsScreen = ({ route }: any) => {
       const resp = await IdiomaPlayApi.get("/units/" + unitId, {});
 
       let numberOfLessons = resp.data.lessons.length;
-      console.log(numberOfLessons);
       return numberOfLessons;
     } catch (error) {
       console.error(error);
@@ -117,13 +115,11 @@ export const UnitsScreen = ({ route }: any) => {
       });
 
       let completedLessons = resp.data.items.filter(function (item: any) {
-        console.log(item);
         return (
           item.exam == null &&
           item.correctExercises >= config.passingAmountOfExcercisesPerLesson
         );
       }).length;
-      console.log(completedLessons);
       return completedLessons;
     } catch (error) {
       console.error(error);

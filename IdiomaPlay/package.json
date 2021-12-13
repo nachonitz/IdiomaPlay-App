@@ -41,6 +41,7 @@
     "react-native-svg": "12.1.1",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12",
+    "use-elapsed-time": "^3.0.2",
     "victory": "^36.0.1"
   },
   "devDependencies": {

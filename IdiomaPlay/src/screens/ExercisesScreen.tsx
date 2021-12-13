@@ -19,6 +19,7 @@ import { CustomSnackBar } from "../components/CustomSnackBar";
 import { Screens } from "../navigator/Screens";
 import { colors } from "../theme/colors";
 import { AuthContext } from "../context/AuthContext";
+import { useElapsedTime } from "use-elapsed-time";
 
 // TODO: mejorar tipos en el route
 // interface Props {
@@ -50,10 +51,13 @@ export const ExercisesScreen = ({ route }: any) => {
   const [messageText, setmessageText] = useState("");
   const [failedOption, setfailedOption] = useState(false);
   const context = useContext(AuthContext);
+  const { elapsedTime } = useElapsedTime({ isPlaying: true })
+
 
   const startParticipation = async () => {
     try {
       const id = context.status == "authenticated" && context.id;
+      // console.log(300 - duration)
       const participationResponse = await IdiomaPlayApi.post(
         "/participations",
         {
@@ -61,7 +65,7 @@ export const ExercisesScreen = ({ route }: any) => {
           unitId: route.params.unitId,
           lessonId: route.params.isExam ? undefined : route.params.lessonId,
           examId: route.params.isExam ? route.params.examId : undefined,
-          examTime: route.params.isExam ? 300 - duration: undefined,
+          // examTime: route.params.isExam ? 300 - duration: undefined,
           correctExercises: 0,
         }
       );
@@ -103,7 +107,6 @@ export const ExercisesScreen = ({ route }: any) => {
         "https://tp-tdp2.herokuapp.com/exams/" + route.params.examId
       );
       const exercises = await respondLessons.json();
-      console.log(exercises);
       setExercises(exercises.exercises);
       setDuration(300);
     } catch (error) {
@@ -150,7 +153,9 @@ export const ExercisesScreen = ({ route }: any) => {
   };
 
   const finishExercise = async (failed?: boolean, isRetry?: boolean) => {
+    console.log('FinishExercise')
     if (failedExercises >= MAX_FAILED_EXERCISES && failed) {
+      console.log('Falló mas de lo permitido')
       // Failed lesson
       setfailedLesson(true);
       if (route.params.isExam) {
@@ -165,8 +170,11 @@ export const ExercisesScreen = ({ route }: any) => {
         );
       }
       setShowModal(true);
+      setClockRunning(false)
     } else {
+      console.log('Sigue con vidas')
       if (!route.params.isExam && !failed) {
+        console.log('No es examen y no fallo')
         if (!isRetry) setShowEarnPointsAnimation(true);
         const id = context.status == "authenticated" && context.id;
         const resp = await IdiomaPlayApi.patch(
@@ -183,22 +191,26 @@ export const ExercisesScreen = ({ route }: any) => {
         await getPoints();
       }
       if (currentExercise < exercises.length - 1) {
+        console.log('Aumenta numero ejercicio')
         setcurrentExercise(currentExercise + 1);
       } else {
         if (route.params.isExam) {
+          console.log('Termino el examen')
           const id = context.status == "authenticated" && context.id;
+          console.log('ExamTime: ',Math.round(elapsedTime))
           const resp = await IdiomaPlayApi.post("/participations", {
             userId: id,
             unitId: route.params.unitId,
             lessonId: undefined,
             examId: route.params.examId,
-            examTime: route.params.isExam ? 300 - duration: undefined,
+            examTime: Math.round(elapsedTime),
             correctExercises: currentExercise + 1 - failedExercises,
           });
           setMessageModal(
             "Felicitaciones! Has completado el examen correctamente"
           );
         } else {
+          console.log('Termino la leccion')
           setMessageModal(
             "Felicitaciones! Has completado la lección correctamente"
           );

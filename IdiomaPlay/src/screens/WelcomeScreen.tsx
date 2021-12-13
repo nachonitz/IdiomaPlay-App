@@ -39,8 +39,6 @@ export const WelcomeScreen = () => {
           },
         }
       );
-      console.log("Google token", response?.authentication.accessToken);
-      console.log("Back response", resp.data.id);
 
       //Save user to context
       context.status != "authenticated" &&

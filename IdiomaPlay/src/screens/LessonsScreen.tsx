@@ -29,11 +29,9 @@ export const LessonsScreen = ({ route }: any) => {
 
   const getLessons = async () => {
     try {
-      console.log(route.params.unitId);
       const resp = await IdiomaPlayApi.get("/units/" + route.params.unitId);
       setExamId(resp.data.exam.id);
       setLessons(resp.data.lessons);
-      console.log(resp.data.lessons);
       const completed: Array<any> = [];
       const length = resp.data.lessons.length;
       const lessons = resp.data.lessons;
@@ -51,10 +49,8 @@ export const LessonsScreen = ({ route }: any) => {
             unit: route.params.unitId,
           },
         });
-        console.log(participationsResp);
         const length = participationsResp.data.items.length;
         const participations = participationsResp.data.items;
-        console.log(participations);
         for (var i = 0; i < length; i++) {
           const exam = participations[i].exam;
           if (exam) {
@@ -101,7 +97,6 @@ export const LessonsScreen = ({ route }: any) => {
           item.correctExercises < config.passingAmountOfExcercisesPerExam
         );
       }).length;
-      console.log(examOpportunities);
       setExamOpportunities(3 - examParticipationsFailed);
     } catch (error) {
       console.error(error);

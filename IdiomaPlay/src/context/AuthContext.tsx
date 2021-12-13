@@ -90,7 +90,6 @@ export const AuthProvider = ({ children }: any) => {
         seconds: 30,
       },
     });
-    console.log(notificationId);
   };
 
   const logIn = async (googleToken: string, id: number) => {

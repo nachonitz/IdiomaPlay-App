@@ -95,7 +95,6 @@ export const ChallengesScreen = () => {
   const getChallengeCompletedUnits = async (challengeId: number) => {
     try {
       const id = context.status == "authenticated" && context.id;
-      console.log("context id", id);
       const resp = await IdiomaPlayApi.get("/participations", {
         params: {
           user: id,
