@@ -340,7 +340,7 @@ const homeStyles = StyleSheet.create({
     minHeight: Dimensions.get("window").height - 120,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     textAlign: "center",
     color: colors.darkPrimary,
     fontWeight: "bold",
@@ -361,11 +361,10 @@ const homeStyles = StyleSheet.create({
   sentence: {
     marginTop: 30,
     marginBottom: 15,
-    fontSize: 21,
+    fontSize: 19,
     textAlign: "center",
     color: colors.primary,
     fontWeight: "bold",
-    
   },
   titleContainer: {
     justifyContent: "space-between",
@@ -402,7 +401,7 @@ const homeStyles = StyleSheet.create({
     backgroundColor: colors.wrong,
   },
   cardTitle: {
-    fontSize: 17,
+    fontSize: 15,
     color: colors.darkPrimary,
     fontWeight: "bold",
     textAlign: "center",

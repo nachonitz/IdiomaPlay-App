@@ -51,8 +51,7 @@ export const ExercisesScreen = ({ route }: any) => {
   const [messageText, setmessageText] = useState("");
   const [failedOption, setfailedOption] = useState(false);
   const context = useContext(AuthContext);
-  const { elapsedTime } = useElapsedTime({ isPlaying: true })
-
+  const { elapsedTime } = useElapsedTime({ isPlaying: true });
 
   const startParticipation = async () => {
     try {
@@ -142,6 +141,7 @@ export const ExercisesScreen = ({ route }: any) => {
       // setPoints(points - requiredPoints)
       setFailedExercises(failedExercises - lives);
       setBoughtLives(true);
+      setfailedLesson(false);
     } catch (error) {
       console.error(error);
     }
@@ -153,26 +153,25 @@ export const ExercisesScreen = ({ route }: any) => {
   };
 
   const finishExercise = async (failed?: boolean, isRetry?: boolean) => {
-    console.log('FinishExercise')
+    console.log("FinishExercise");
     if (failedExercises >= MAX_FAILED_EXERCISES && failed) {
-      console.log('Falló mas de lo permitido')
+      console.log("Falló mas de lo permitido");
       // Failed lesson
+      setfailedLesson(true);
       if (route.params.isExam) {
         // startParticipation();
         setMessageModal("Te has quedado sin vidas!");
-        setClockRunning(false);
       } else {
-        setfailedLesson(true);
         setMessageModal(
           "No has logrado completar correctamente la lección, vuelve a intentarlo!"
         );
       }
       setShowModal(true);
-      setClockRunning(false)
+      setClockRunning(false);
     } else {
-      console.log('Sigue con vidas')
+      console.log("Sigue con vidas");
       if (!route.params.isExam && !failed) {
-        console.log('No es examen y no fallo')
+        console.log("No es examen y no fallo");
         if (!isRetry) setShowEarnPointsAnimation(true);
         const id = context.status == "authenticated" && context.id;
         const resp = await IdiomaPlayApi.patch(
@@ -189,13 +188,13 @@ export const ExercisesScreen = ({ route }: any) => {
         await getPoints();
       }
       if (currentExercise < exercises.length - 1) {
-        console.log('Aumenta numero ejercicio')
+        console.log("Aumenta numero ejercicio");
         setcurrentExercise(currentExercise + 1);
       } else {
         if (route.params.isExam) {
-          console.log('Termino el examen')
+          console.log("Termino el examen");
           const id = context.status == "authenticated" && context.id;
-          console.log('ExamTime: ',Math.round(elapsedTime))
+          console.log("ExamTime: ", Math.round(elapsedTime));
           const resp = await IdiomaPlayApi.post("/participations", {
             userId: id,
             unitId: route.params.unitId,
@@ -209,7 +208,7 @@ export const ExercisesScreen = ({ route }: any) => {
             "Felicitaciones! Has completado el examen correctamente"
           );
         } else {
-          console.log('Termino la leccion')
+          console.log("Termino la leccion");
           setMessageModal(
             "Felicitaciones! Has completado la lección correctamente"
           );
@@ -255,6 +254,33 @@ export const ExercisesScreen = ({ route }: any) => {
         message={messageText}
         error={failedOption}
       />
+      {/* {duration !== 0 && route.params.isExam && ( */}
+      <View
+        style={{
+          position: "absolute",
+          top: 40,
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        <CountDown
+          until={duration}
+          onFinish={() => {
+            setDuration(0);
+            setMessageModal("Te has quedado sin tiempo!");
+            setShowModal(true);
+          }}
+          timeToShow={["M", "S"]}
+          digitStyle={{ backgroundColor: "transparent" }}
+          timeLabels={{ m: "", s: "" }}
+          separatorStyle={{ color: colors.darkPrimary, fontSize: 20 }}
+          showSeparator={true}
+          digitTxtStyle={{ color: colors.darkPrimary, fontSize: 25 }}
+          running={clockRunning}
+          size={14}
+        />
+      </View>
+      {/* )} */}
       <CustomExerciseHeader
         lives={MAX_FAILED_EXERCISES - failedExercises + 1}
         points={points}
@@ -267,25 +293,6 @@ export const ExercisesScreen = ({ route }: any) => {
         // currentExercise={0}
         // maxExercises={0}
       >
-        {duration !== 0 && route.params.isExam && (
-          <CountDown
-            until={duration}
-            onFinish={() => {
-              setDuration(0);
-              setMessageModal("Te has quedado sin tiempo!");
-              setShowModal(true);
-            }}
-            timeToShow={["M", "S"]}
-            digitStyle={{ backgroundColor: "transparent" }}
-            timeLabels={{ m: "", s: "" }}
-            separatorStyle={{ color: colors.darkPrimary, fontSize: 20 }}
-            showSeparator={true}
-            digitTxtStyle={{ color: colors.darkPrimary, fontSize: 25 }}
-            running={clockRunning}
-            size={20}
-          />
-        )}
-
         <View style={homeStyles.container}>
           {exercises.length > 0 && (
             <CustomExercise
