@@ -79,8 +79,8 @@ export const CustomExerciseHeader = ({
         <View
           style={{
             ...customScreenStyles.headerContainer,
-            paddingTop: top ? top -10  : 5,
-            height: 60 + (top ? top : 5),
+            paddingTop: top ? top - 10 : 5,
+            height: 60 + (top ? top : 20),
             // backgroundColor: 'pink',
             flexDirection: "column",
             alignItems: "center",
@@ -144,7 +144,7 @@ export const CustomExerciseHeader = ({
               justifyContent: "space-between",
               paddingHorizontal: styles.globalMargin.marginHorizontal,
               width: "100%",
-              marginTop: 10,
+              marginTop: 5,
             }}
           >
             <View style={{ flexDirection: "row" }}>
