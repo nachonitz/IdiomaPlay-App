@@ -1,3 +1,10 @@
+# Links:
+Admin:
+https://github.com/sberoch/IdiomaPlay-Admin
+
+Server:
+https://github.com/sberoch/IdiomaPlay-Back
+
 # IdiomaPlay-App
 React Native Expo app for Taller de desarrollo de proyectos - Fiuba
 
