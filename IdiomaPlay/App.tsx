@@ -1,21 +1,26 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import "react-native-gesture-handler";
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { Navigator } from "./src/navigator/Navigator";
+import { AuthProvider } from "./src/context/AuthContext";
+import { LogBox } from "react-native";
+
+const AppState = ({ children }: any) => {
+  return <AuthProvider>{children}</AuthProvider>;
+};
+
+// Ignore log notification by message:
+LogBox.ignoreLogs(["Warning: ..."]);
+
+// Ignore all log notifications:
+LogBox.ignoreAllLogs();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <AppState>
+        <Navigator />
+      </AppState>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

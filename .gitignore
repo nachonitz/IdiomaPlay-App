@@ -1,2 +1,6 @@
 
 *.code-workspace
+
+*.log
+
+.DS_Store
